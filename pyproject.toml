@@ -1,0 +1,25 @@
+[project]
+name = "services"
+version = "0.1.0"
+description = "船舶能效数据分析 - 微服务工作区"
+requires-python = ">=3.12"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9",
+]
+
+[tool.uv.workspace]
+members = ["libs/*", "apps/*"]
+
+[[tool.uv.index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+default = true
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["B008", "UP046"]
