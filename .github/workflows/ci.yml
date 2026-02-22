@@ -7,6 +7,27 @@ on:
     branches: [main]
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      common: ${{ steps.filter.outputs.common }}
+      meta: ${{ steps.filter.outputs.meta }}
+      identity: ${{ steps.filter.outputs.identity }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            common:
+              - 'libs/common/**'
+            meta:
+              - 'apps/meta/**'
+              - 'libs/common/**'
+            identity:
+              - 'apps/identity/**'
+              - 'libs/common/**'
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -18,6 +39,8 @@ jobs:
 
   test-common:
     runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ needs.changes.outputs.common == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -26,6 +49,8 @@ jobs:
 
   test-meta:
     runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ needs.changes.outputs.meta == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -34,6 +59,8 @@ jobs:
 
   test-identity:
     runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ needs.changes.outputs.identity == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -43,6 +70,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: [lint, test-common, test-meta, test-identity]
+    if: ${{ !failure() && !cancelled() }}
     strategy:
       matrix:
         include:
