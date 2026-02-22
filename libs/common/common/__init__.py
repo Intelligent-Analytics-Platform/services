@@ -1,3 +1,4 @@
+from common.auth import create_access_token, decode_token, get_password_hash, verify_password
 from common.database import create_engine_from_url, get_session
 from common.exceptions import (
     AppError,
@@ -12,6 +13,10 @@ from common.repository import BaseRepository
 from common.schemas import ResponseModel
 
 __all__ = [
+    "create_access_token",
+    "decode_token",
+    "get_password_hash",
+    "verify_password",
     "Base",
     "IntIDMixin",
     "TimestampMixin",

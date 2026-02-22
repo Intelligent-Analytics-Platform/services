@@ -1,14 +1,13 @@
 [project]
-name = "common"
+name = "identity"
 version = "0.1.0"
-description = "微服务公共库 - 数据库、仓储、异常、响应模型"
+description = "身份认证微服务 - 公司管理与用户认证"
 requires-python = ">=3.12"
 dependencies = [
-    "sqlalchemy>=2.0",
-    "pydantic>=2.0",
+    "common",
     "fastapi>=0.115",
-    "pyjwt>=2.10",
-    "bcrypt>=4.3",
+    "pydantic-settings>=2.1",
+    "uvicorn>=0.32",
 ]
 
 [build-system]
@@ -24,6 +23,9 @@ dev = [
 [[tool.uv.index]]
 url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
 default = true
+
+[tool.uv.sources]
+common = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

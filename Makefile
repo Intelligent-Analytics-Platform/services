@@ -1,4 +1,5 @@
-.PHONY: install lint format test test-common test-meta run-meta build-meta docker-run-meta clean
+.PHONY: install lint format test test-common test-meta test-identity \
+       run-meta run-identity build-meta build-identity clean
 
 # 安装所有依赖
 install:
@@ -15,7 +16,7 @@ format:
 	uv run ruff format .
 
 # 运行所有测试
-test: test-common test-meta
+test: test-common test-meta test-identity
 
 # common 单元测试
 test-common:
@@ -25,20 +26,26 @@ test-common:
 test-meta:
 	cd apps/meta && uv run pytest -v
 
-# 本地运行 meta 服务
+# identity API 测试
+test-identity:
+	cd apps/identity && uv run pytest -v
+
+# 本地运行
 run-meta:
 	cd apps/meta && uv run uvicorn meta.app:app --reload --host 0.0.0.0 --port 8000
 
-# 构建 meta Docker 镜像
+run-identity:
+	cd apps/identity && uv run uvicorn identity.app:app --reload --host 0.0.0.0 --port 8001
+
+# Docker 构建
 build-meta:
 	docker build -f apps/meta/Dockerfile -t meta-service .
 
-# Docker 运行 meta 服务
-docker-run-meta:
-	docker run --rm -p 8000:8000 meta-service
+build-identity:
+	docker build -f apps/identity/Dockerfile -t identity-service .
 
 # 清理缓存
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
-	rm -f apps/meta/meta.db
+	rm -f apps/meta/meta.db apps/identity/identity.db
