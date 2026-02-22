@@ -7,4 +7,3 @@ dist/
 .env
 .pytest_cache/
 .ruff_cache/
-uv.lock
