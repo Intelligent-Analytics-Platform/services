@@ -1,6 +1,6 @@
-.PHONY: install lint format test test-common test-meta test-identity test-vessel \
-       run-meta run-identity run-vessel \
-       build-meta build-identity build-vessel \
+.PHONY: install lint format test test-common test-meta test-identity test-vessel test-data \
+       run-meta run-identity run-vessel run-data \
+       build-meta build-identity build-vessel build-data \
        up-obs down-obs \
        kind-create kind-delete kind-load kind-apply kind-delete-apps \
        clean
@@ -20,7 +20,7 @@ format:
 	uv run ruff format .
 
 # 运行所有测试
-test: test-common test-meta test-identity test-vessel
+test: test-common test-meta test-identity test-vessel test-data
 
 # common 单元测试
 test-common:
@@ -38,6 +38,10 @@ test-identity:
 test-vessel:
 	cd apps/vessel && uv run pytest -v
 
+# data API 测试
+test-data:
+	cd apps/data && uv run pytest -v
+
 # 本地运行
 run-meta:
 	cd apps/meta && uv run uvicorn meta.app:app --reload --host 0.0.0.0 --port 8000
@@ -48,6 +52,9 @@ run-identity:
 run-vessel:
 	cd apps/vessel && uv run uvicorn vessel.app:app --reload --host 0.0.0.0 --port 8002
 
+run-data:
+	cd apps/data && uv run uvicorn data.app:app --reload --host 0.0.0.0 --port 8003
+
 # Docker 构建
 build-meta:
 	docker build -f apps/meta/Dockerfile -t meta-service .
@@ -57,6 +64,9 @@ build-identity:
 
 build-vessel:
 	docker build -f apps/vessel/Dockerfile -t vessel-service .
+
+build-data:
+	docker build -f apps/data/Dockerfile -t data-service .
 
 # 可观测性（Loki + Grafana + Promtail）
 up-obs:
@@ -104,3 +114,4 @@ clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
 	rm -f apps/meta/meta.db apps/identity/identity.db apps/vessel/vessel.db
+	rm -f apps/data/data.db apps/data/data.duckdb

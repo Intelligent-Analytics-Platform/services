@@ -1,6 +1,6 @@
 # 船舶能效数据分析 — 微服务架构
 
-基于 uv workspace 的 monorepo，包含三个独立微服务 + 可观测性组件。
+基于 uv workspace 的 monorepo，包含四个独立微服务 + 可观测性组件。
 
 ---
 
@@ -24,7 +24,8 @@ services/
 └── apps/
     ├── meta/                   # 元数据服务（port 8000）
     ├── identity/               # 身份认证服务（port 8001）
-    └── vessel/                 # 船舶管理服务（port 8002）
+    ├── vessel/                 # 船舶管理服务（port 8002）
+    └── data/                   # 遥测数据服务（port 8003）
 ```
 
 ---
@@ -35,7 +36,8 @@ services/
 |------|------|------|------|
 | meta | 8000 | 燃料/船型/时区等只读参考数据 | [apps/meta/README.md](apps/meta/README.md) |
 | identity | 8001 | 公司管理 + 用户注册/登录/JWT | [apps/identity/README.md](apps/identity/README.md) |
-| vessel | 8002 | 船舶信息 + 设备 + 功率曲线 | apps/vessel/README.md |
+| vessel | 8002 | 船舶信息 + 设备 + 功率曲线 | [apps/vessel/README.md](apps/vessel/README.md) |
+| data | 8003 | CSV 上传 + 数据清洗 + DuckDB 存储 + CII 计算 | [apps/data/README.md](apps/data/README.md) |
 
 ---
 
@@ -51,19 +53,23 @@ uv sync --all-packages
 make run-meta       # http://localhost:8000/docs
 make run-identity   # http://localhost:8001/docs
 make run-vessel     # http://localhost:8002/docs
+make run-data       # http://localhost:8003/docs
 ```
 
-首次启动会自动建表并执行 `seed.sql` 写入初始数据：
-- meta：16 种燃料、13 种船型、25 个时区
-- identity：测试公司 + 管理员账号（`admin` / `test1234`）
+首次启动会自动建表，部分服务执行 `seed.sql` 写入初始数据：
+- **meta**：16 种燃料、13 种船型、25 个时区
+- **identity**：测试公司 + 管理员账号（`admin` / `test1234`）
+- **vessel / data**：仅建表，无 seed
 
 ### 运行测试
 
 ```bash
 make test           # 运行所有服务测试
+make test-common    # 单独运行 common 测试
 make test-meta      # 单独运行 meta 测试
 make test-identity  # 单独运行 identity 测试
 make test-vessel    # 单独运行 vessel 测试
+make test-data      # 单独运行 data 测试
 ```
 
 ---
@@ -90,6 +96,8 @@ make kind-apply      # 部署所有 k8s 资源
 | vessel | 8002 |
 | Grafana | 3000 |
 | Loki | 3100 |
+
+> **注**：data 服务（port 8003）尚未加入 kind-load 和 k8s manifests，本地开发通过 `make run-data` 启动即可。
 
 ### ⚠️ Docker Desktop 重启后端口失效问题
 
@@ -122,7 +130,7 @@ kubectl config set-cluster kind-iap --server=https://$NODE_IP:6443
 kubectl get pods -n services
 ```
 
-注意：此方案只修复 kubectl 连接，NodePort 端口（8000/8001/8002/3000/3100）在重建前仍无法从宿主机访问。
+注意：此方案只修复 kubectl 连接，NodePort 端口在重建前仍无法从宿主机访问。
 
 ---
 
@@ -143,7 +151,19 @@ Grafana 访问：`http://localhost:3000`（默认无需登录）
 {service="meta"}
 {service="identity"}
 {service="vessel"}
+{service="data"}
 ```
+
+---
+
+## CI
+
+GitHub Actions（`.github/workflows/ci.yml`）在每次 push/PR 时：
+
+1. **changes**：通过 `dorny/paths-filter` 检测变更范围，跳过未改动服务的测试
+2. **lint**：`ruff check` + `ruff format --check`（全局）
+3. **test-\***：各服务独立测试（仅在对应路径有变更时触发）
+4. **build**：矩阵构建四个 Docker 镜像（meta / identity / vessel / data）
 
 ---
 
