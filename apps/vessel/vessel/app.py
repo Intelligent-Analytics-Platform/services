@@ -3,12 +3,14 @@
 import logging
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from common.exceptions import setup_exception_handlers
 from common.logging import setup_logging
 from common.models import Base
 from common.schemas import ResponseModel
 from fastapi import FastAPI, Request
+from sqlalchemy import text
 
 from vessel.config import settings
 from vessel.database import engine
@@ -16,11 +18,19 @@ from vessel.router import vessel_router
 
 logger = logging.getLogger(__name__)
 
+_SEED_SQL = Path(__file__).parent / "seed.sql"
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     setup_logging("vessel", settings.log_level)
     Base.metadata.create_all(bind=engine)
+    with engine.connect() as conn:
+        if not conn.execute(text("SELECT 1 FROM vessel LIMIT 1")).first():
+            for stmt in _SEED_SQL.read_text().split(";"):
+                if stmt.strip():
+                    conn.execute(text(stmt.strip()))
+        conn.commit()
     logger.info("vessel service started")
     yield
     logger.info("vessel service stopped")
