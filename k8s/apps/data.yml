@@ -1,0 +1,115 @@
+# ── data 服务 ─────────────────────────────────────────────────────────────────
+# 遥测数据微服务：CSV 上传 → 数据清洗 → DuckDB 存储 → CII 计算
+# 端口 8003，NodePort 30004
+#
+# 存储卷：
+#   data-storage (20Gi)  — SQLite (data.db) + DuckDB (data.duckdb)
+#   data-uploads (10Gi)  — 上传 CSV 文件临时目录
+#
+# 注意：analytics 服务会以只读方式挂载 data-storage 中的 data.duckdb。
+# ─────────────────────────────────────────────────────────────────────────────
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-storage
+  namespace: services
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-uploads
+  namespace: services
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data
+  namespace: services
+  labels:
+    app: data
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data
+  template:
+    metadata:
+      labels:
+        app: data
+    spec:
+      containers:
+        - name: data
+          image: data-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8003
+          env:
+            - name: DATABASE_URL
+              value: "sqlite:////data/data.db"
+            - name: DUCK_DB_PATH
+              value: "/data/data.duckdb"
+            - name: UPLOAD_DIR
+              value: "/uploads"
+            - name: MAX_FILE_SIZE
+              value: "104857600"
+            - name: LOG_LEVEL
+              value: "INFO"
+          volumeMounts:
+            - name: storage
+              mountPath: /data
+            - name: uploads
+              mountPath: /uploads
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8003
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8003
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: data-storage
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: data-uploads
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data
+  namespace: services
+spec:
+  type: NodePort
+  selector:
+    app: data
+  ports:
+    - port: 8003
+      targetPort: 8003
+      nodePort: 30004

@@ -1,9 +1,9 @@
 """Data access layer for VesselDataUpload (SQLAlchemy / SQLite)."""
 
+from common.repository import BaseRepository
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from common.repository import BaseRepository
 from data.models import VesselDataUpload
 
 

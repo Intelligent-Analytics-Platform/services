@@ -59,9 +59,7 @@ class CompanyUpdate(BaseModel):
     contact_phone: str | None = None
     contact_email: str | None = None
 
-    model_config = {
-        "json_schema_extra": {"examples": [{"address": "北京市朝阳区建国路88号"}]}
-    }
+    model_config = {"json_schema_extra": {"examples": [{"address": "北京市朝阳区建国路88号"}]}}
 
 
 # --- User ---
@@ -99,9 +97,7 @@ class UserLoginData(BaseModel):
     password: str
 
     model_config = {
-        "json_schema_extra": {
-            "examples": [{"username": "captain_zhang", "password": "mypassword"}]
-        }
+        "json_schema_extra": {"examples": [{"username": "captain_zhang", "password": "mypassword"}]}
     }
 
 
@@ -128,9 +124,7 @@ class UserRegisterData(BaseModel):
 class UserUpdate(BaseModel):
     phone: str | None = None
 
-    model_config = {
-        "json_schema_extra": {"examples": [{"phone": "13988888888"}]}
-    }
+    model_config = {"json_schema_extra": {"examples": [{"phone": "13988888888"}]}}
 
 
 class UserWithToken(UserSchema):

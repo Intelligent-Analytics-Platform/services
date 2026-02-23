@@ -1,6 +1,7 @@
-.PHONY: install lint format test test-common test-meta test-identity test-vessel test-data \
-       run-meta run-identity run-vessel run-data \
-       build-meta build-identity build-vessel build-data \
+.PHONY: install lint format test test-common test-meta test-identity test-vessel test-data test-analytics \
+       run-meta run-identity run-vessel run-data run-analytics \
+       build-meta build-identity build-vessel build-data build-analytics \
+       gen-docs \
        up-obs down-obs \
        kind-create kind-delete kind-load kind-apply kind-delete-apps \
        clean
@@ -20,7 +21,7 @@ format:
 	uv run ruff format .
 
 # 运行所有测试
-test: test-common test-meta test-identity test-vessel test-data
+test: test-common test-meta test-identity test-vessel test-data test-analytics
 
 # common 单元测试
 test-common:
@@ -42,6 +43,10 @@ test-vessel:
 test-data:
 	cd apps/data && uv run pytest -v
 
+# analytics API 测试
+test-analytics:
+	cd apps/analytics && uv run pytest -v
+
 # 本地运行
 run-meta:
 	cd apps/meta && uv run uvicorn meta.app:app --reload --host 0.0.0.0 --port 8000
@@ -55,6 +60,9 @@ run-vessel:
 run-data:
 	cd apps/data && uv run uvicorn data.app:app --reload --host 0.0.0.0 --port 8003
 
+run-analytics:
+	cd apps/analytics && uv run uvicorn analytics.app:app --reload --host 0.0.0.0 --port 8004
+
 # Docker 构建
 build-meta:
 	docker build -f apps/meta/Dockerfile -t meta-service .
@@ -67,6 +75,13 @@ build-vessel:
 
 build-data:
 	docker build -f apps/data/Dockerfile -t data-service .
+
+build-analytics:
+	docker build -f apps/analytics/Dockerfile -t analytics-service .
+
+# 生成合并 OpenAPI 文档
+gen-docs:
+	uv run python scripts/gen_openapi.py
 
 # 可观测性（Loki + Grafana + Promtail）
 up-obs:
@@ -89,10 +104,12 @@ kind-pull-obs:
 	docker pull grafana/grafana:latest
 
 # 构建并加载所有镜像到 Kind
-kind-load: build-meta build-identity build-vessel
+kind-load: build-meta build-identity build-vessel build-data build-analytics
 	kind load docker-image meta-service:latest --name iap
 	kind load docker-image identity-service:latest --name iap
 	kind load docker-image vessel-service:latest --name iap
+	kind load docker-image data-service:latest --name iap
+	kind load docker-image analytics-service:latest --name iap
 	kind load docker-image grafana/loki:3.0.0 --name iap
 	kind load docker-image grafana/promtail:3.0.0 --name iap
 	kind load docker-image grafana/grafana:latest --name iap
@@ -115,3 +132,4 @@ clean:
 	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
 	rm -f apps/meta/meta.db apps/identity/identity.db apps/vessel/vessel.db
 	rm -f apps/data/data.db apps/data/data.duckdb
+	rm -f apps/analytics/analytics.db

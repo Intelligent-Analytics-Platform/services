@@ -1,0 +1,3795 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "船舶能效分析平台 API",
+    "description": "整合 Meta / Identity / Vessel / Data 四个微服务的 OpenAPI 文档。\n\n每条路径通过 path-level `servers` 字段标明所属服务：\n\n| 服务 | 地址 |\n|------|------|\n| Meta 元数据 | http://localhost:8000 |\n| Identity 身份认证 | http://localhost:8001 |\n| Vessel 船舶管理 | http://localhost:8002 |\n| Data 遥测数据 | http://localhost:8003 |",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "健康检查",
+        "description": "各服务均提供此端点，替换 servers[0].url 后访问对应服务。",
+        "operationId": "health_check",
+        "tags": [
+          "健康检查"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8000",
+          "description": "Meta 元数据服务"
+        },
+        {
+          "url": "http://localhost:8001",
+          "description": "Identity 身份认证服务"
+        },
+        {
+          "url": "http://localhost:8002",
+          "description": "Vessel 船舶管理服务"
+        },
+        {
+          "url": "http://localhost:8003",
+          "description": "Data 遥测数据服务"
+        }
+      ]
+    },
+    "/meta/fuel_type": {
+      "get": {
+        "tags": [
+          "元数据"
+        ],
+        "summary": "获取燃料类型",
+        "description": "返回系统支持的所有燃料类型，包含中英文名称、缩写及碳排放因子（CF）。",
+        "operationId": "get_fuel_types_meta_fuel_type_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaResponseModel_list_FuelTypeSchema__"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8000",
+          "description": "Meta 元数据服务"
+        }
+      ]
+    },
+    "/meta/ship_type": {
+      "get": {
+        "tags": [
+          "元数据"
+        ],
+        "summary": "获取船舶类型",
+        "description": "返回 IMO CII 规定的船舶类型列表，包含类型代码及 CII 计算吨位基准（DWT 或 GT）。",
+        "operationId": "get_ship_types_meta_ship_type_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaResponseModel_list_ShipTypeSchema__"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8000",
+          "description": "Meta 元数据服务"
+        }
+      ]
+    },
+    "/meta/time_zone": {
+      "get": {
+        "tags": [
+          "元数据"
+        ],
+        "summary": "获取时区",
+        "description": "返回全球 25 个标准时区（UTC-12 至 UTC+12），供航海日志时区选择使用。",
+        "operationId": "get_time_zones_meta_time_zone_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaResponseModel_list_TimeZoneSchema__"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8000",
+          "description": "Meta 元数据服务"
+        }
+      ]
+    },
+    "/meta/attributes": {
+      "get": {
+        "tags": [
+          "元数据"
+        ],
+        "summary": "属性",
+        "description": "返回性能分析支持的船舶属性列表（如航速、主机功率、油耗等），每个属性含字段名与中文描述。",
+        "operationId": "get_attributes_meta_attributes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaResponseModel_list_AttributeMapping__"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8000",
+          "description": "Meta 元数据服务"
+        }
+      ]
+    },
+    "/meta/attribute_mapping": {
+      "get": {
+        "tags": [
+          "元数据"
+        ],
+        "summary": "属性组合",
+        "description": "返回用于散点图分析的属性对组合（X 轴 / Y 轴），例如对水航速 vs 主机功率。",
+        "operationId": "get_attribute_mapping_meta_attribute_mapping_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaResponseModel_list_AttributeMappings__"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8000",
+          "description": "Meta 元数据服务"
+        }
+      ]
+    },
+    "/meta/fuel_type_category": {
+      "get": {
+        "tags": [
+          "元数据"
+        ],
+        "summary": "燃料类型分类",
+        "description": "返回燃料大类列表（如 hfo、lng、hydrogen），用于前端筛选和分组展示。",
+        "operationId": "get_fuel_type_category_meta_fuel_type_category_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaResponseModel_list_LabelValue__"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8000",
+          "description": "Meta 元数据服务"
+        }
+      ]
+    },
+    "/company": {
+      "get": {
+        "tags": [
+          "公司"
+        ],
+        "summary": "获取所有公司",
+        "description": "返回系统内所有公司列表，无分页。",
+        "operationId": "get_companies_company_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityResponseModel_list_CompanySchema__"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "公司"
+        ],
+        "summary": "创建公司",
+        "description": "创建新公司。公司名称全局唯一。",
+        "operationId": "create_company_company_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdentityCompanyCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityResponseModel_CompanySchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8001",
+          "description": "Identity 身份认证服务"
+        }
+      ]
+    },
+    "/company/{company_id}": {
+      "get": {
+        "tags": [
+          "公司"
+        ],
+        "summary": "获取单个公司详情",
+        "description": "按 ID 获取公司信息。不存在时返回 404。",
+        "operationId": "get_company_company__company_id__get",
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityResponseModel_CompanySchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "公司"
+        ],
+        "summary": "更新公司信息",
+        "description": "部分更新公司信息，仅传入需要修改的字段。",
+        "operationId": "update_company_company__company_id__put",
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdentityCompanyUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityResponseModel_CompanySchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "公司"
+        ],
+        "summary": "删除公司",
+        "description": "硬删除公司记录。请确认该公司下无用户，否则会导致用户的 company_id 悬空。",
+        "operationId": "delete_company_company__company_id__delete",
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityResponseModel_CompanySchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8001",
+          "description": "Identity 身份认证服务"
+        }
+      ]
+    },
+    "/user": {
+      "get": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "获取用户列表",
+        "description": "获取未禁用的用户列表，支持按用户名模糊搜索和公司过滤，支持分页。",
+        "operationId": "get_user_list_user_get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "用户名(模糊搜索)",
+              "title": "Name"
+            },
+            "description": "用户名(模糊搜索)"
+          },
+          {
+            "name": "company_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "公司ID",
+              "title": "Company Id"
+            },
+            "description": "公司ID"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "偏移量",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "偏移量"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "每页数量",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "每页数量"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityResponseModel_list_UserSchema__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8001",
+          "description": "Identity 身份认证服务"
+        }
+      ]
+    },
+    "/user/register": {
+      "post": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "注册用户",
+        "description": "创建新用户，密码自动加密存储，响应中不包含密码字段。",
+        "operationId": "register_user_user_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdentityUserRegisterData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityResponseModel_UserSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8001",
+          "description": "Identity 身份认证服务"
+        }
+      ]
+    },
+    "/user/login": {
+      "post": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "用户登录",
+        "description": "验证用户名和密码，成功后返回用户信息及 JWT token。token 有效期由服务配置决定。",
+        "operationId": "login_user_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdentityUserLoginData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityResponseModel_UserWithToken_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8001",
+          "description": "Identity 身份认证服务"
+        }
+      ]
+    },
+    "/user/{user_id}": {
+      "get": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "获取用户信息",
+        "description": "按 ID 获取用户信息。被禁用的用户等同于不存在，返回 404。",
+        "operationId": "get_user_user__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityResponseModel_UserSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "更新用户信息",
+        "description": "目前仅支持更新手机号。",
+        "operationId": "update_user_user__user_id__put",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdentityUserUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityResponseModel_UserSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "删除用户",
+        "description": "软删除：disabled=true，数据保留。被禁用用户无法登录，GET 返回 404。",
+        "operationId": "delete_user_user__user_id__delete",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityResponseModel_UserSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8001",
+          "description": "Identity 身份认证服务"
+        }
+      ]
+    },
+    "/vessel": {
+      "get": {
+        "tags": [
+          "船舶"
+        ],
+        "summary": "获取船舶列表",
+        "operationId": "get_vessel_list_vessel_get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "船名（模糊搜索）",
+              "title": "Name"
+            },
+            "description": "船名（模糊搜索）"
+          },
+          {
+            "name": "company_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "公司ID",
+              "title": "Company Id"
+            },
+            "description": "公司ID"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "偏移量",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "偏移量"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "每页数量",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "每页数量"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselResponseModel_list_VesselSchema__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "船舶"
+        ],
+        "summary": "创建船舶",
+        "operationId": "create_vessel_vessel_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VesselVesselCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselResponseModel_VesselSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8002",
+          "description": "Vessel 船舶管理服务"
+        }
+      ]
+    },
+    "/vessel/{vessel_id}": {
+      "get": {
+        "tags": [
+          "船舶"
+        ],
+        "summary": "获取船舶详情",
+        "operationId": "get_vessel_vessel__vessel_id__get",
+        "parameters": [
+          {
+            "name": "vessel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Vessel Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselResponseModel_VesselSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "船舶"
+        ],
+        "summary": "更新船舶信息",
+        "operationId": "update_vessel_vessel__vessel_id__put",
+        "parameters": [
+          {
+            "name": "vessel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Vessel Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VesselVesselUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselResponseModel_VesselSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "船舶"
+        ],
+        "summary": "删除船舶",
+        "operationId": "delete_vessel_vessel__vessel_id__delete",
+        "parameters": [
+          {
+            "name": "vessel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Vessel Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselResponseModel_NoneType_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8002",
+          "description": "Vessel 船舶管理服务"
+        }
+      ]
+    },
+    "/upload/vessel/{vessel_id}/standard": {
+      "post": {
+        "summary": "上传标准 CSV 数据",
+        "description": "接收船舶 CSV 文件，立即返回 202，后台异步执行数据清洗、存储和 CII 计算。通过 GET /upload/{upload_id}/status 轮询处理状态。",
+        "operationId": "upload_standard_csv_upload_vessel__vessel_id__standard_post",
+        "parameters": [
+          {
+            "name": "vessel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "船舶 ID",
+              "title": "Vessel Id"
+            },
+            "description": "船舶 ID"
+          },
+          {
+            "name": "pitch",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "螺旋桨螺距（用于滑失比计算）",
+              "default": 6.058,
+              "title": "Pitch"
+            },
+            "description": "螺旋桨螺距（用于滑失比计算）"
+          },
+          {
+            "name": "vessel_capacity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "CII 计算吨位（载重吨或总吨），不提供则跳过 CII 计算",
+              "title": "Vessel Capacity"
+            },
+            "description": "CII 计算吨位（载重吨或总吨），不提供则跳过 CII 计算"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/DataBody_upload_standard_csv_upload_vessel__vessel_id__standard_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataResponseModel_UploadAccepted_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8003",
+          "description": "Data 遥测数据服务"
+        }
+      ]
+    },
+    "/upload/vessel/{vessel_id}/history": {
+      "get": {
+        "summary": "获取船舶上传历史",
+        "description": "按创建时间倒序返回该船舶的上传记录列表，支持分页。",
+        "operationId": "get_upload_history_upload_vessel__vessel_id__history_get",
+        "parameters": [
+          {
+            "name": "vessel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "船舶 ID",
+              "title": "Vessel Id"
+            },
+            "description": "船舶 ID"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "偏移量",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "偏移量"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "每页条数",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "每页条数"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataResponseModel_list_UploadStatusSchema__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8003",
+          "description": "Data 遥测数据服务"
+        }
+      ]
+    },
+    "/upload/{upload_id}/status": {
+      "get": {
+        "summary": "查询上传处理状态",
+        "description": "返回单条上传记录，status 字段为 pending | processing | done | failed。",
+        "operationId": "get_upload_status_upload__upload_id__status_get",
+        "parameters": [
+          {
+            "name": "upload_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "上传记录 ID",
+              "title": "Upload Id"
+            },
+            "description": "上传记录 ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataResponseModel_UploadStatusSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8003",
+          "description": "Data 遥测数据服务"
+        }
+      ]
+    },
+    "/daily/vessel/{vessel_id}": {
+      "get": {
+        "summary": "获取日均数据",
+        "description": "返回 DuckDB 中存储的日均聚合数据（含 CII），按日期倒序分页。",
+        "operationId": "get_daily_data_daily_vessel__vessel_id__get",
+        "parameters": [
+          {
+            "name": "vessel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "船舶 ID",
+              "title": "Vessel Id"
+            },
+            "description": "船舶 ID"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "偏移量",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "偏移量"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "description": "每页条数",
+              "default": 30,
+              "title": "Limit"
+            },
+            "description": "每页条数"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataResponseModel_list_DailyDataSchema__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataHTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8003",
+          "description": "Data 遥测数据服务"
+        }
+      ]
+    }
+  },
+  "components": {
+    "schemas": {
+      "MetaAttributeMapping": {
+        "properties": {
+          "attribute": {
+            "type": "string",
+            "title": "Attribute"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "attribute",
+          "description"
+        ],
+        "title": "AttributeMapping",
+        "examples": [
+          {
+            "attribute": "speed_water",
+            "description": "对水航速"
+          }
+        ]
+      },
+      "MetaAttributeMappings": {
+        "properties": {
+          "attribute_left": {
+            "$ref": "#/components/schemas/MetaAttributeMapping"
+          },
+          "attribute_right": {
+            "$ref": "#/components/schemas/MetaAttributeMapping"
+          }
+        },
+        "type": "object",
+        "required": [
+          "attribute_left",
+          "attribute_right"
+        ],
+        "title": "AttributeMappings",
+        "examples": [
+          {
+            "attribute_left": {
+              "attribute": "speed_water",
+              "description": "对水航速"
+            },
+            "attribute_right": {
+              "attribute": "me_shaft_power",
+              "description": "主机功率"
+            }
+          }
+        ]
+      },
+      "MetaFuelTypeSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name_cn": {
+            "type": "string",
+            "title": "Name Cn"
+          },
+          "name_en": {
+            "type": "string",
+            "title": "Name En"
+          },
+          "name_abbr": {
+            "type": "string",
+            "title": "Name Abbr"
+          },
+          "cf": {
+            "type": "number",
+            "title": "Cf"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name_cn",
+          "name_en",
+          "name_abbr",
+          "cf"
+        ],
+        "title": "FuelTypeSchema",
+        "examples": [
+          {
+            "cf": 2.75,
+            "id": 11,
+            "name_abbr": "LNG",
+            "name_cn": "液化天然气 (LNG)",
+            "name_en": "Liquefied Natural Gas (LNG)"
+          }
+        ]
+      },
+      "MetaLabelValue": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "LabelValue",
+        "examples": [
+          {
+            "label": "液化天然气",
+            "value": "lng"
+          }
+        ]
+      },
+      "MetaResponseModel": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel",
+        "description": "Unified API response wrapper."
+      },
+      "MetaResponseModel_list_AttributeMapping__": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/MetaAttributeMapping"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[list[AttributeMapping]]"
+      },
+      "MetaResponseModel_list_AttributeMappings__": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/MetaAttributeMappings"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[list[AttributeMappings]]"
+      },
+      "MetaResponseModel_list_FuelTypeSchema__": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/MetaFuelTypeSchema"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[list[FuelTypeSchema]]"
+      },
+      "MetaResponseModel_list_LabelValue__": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/MetaLabelValue"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[list[LabelValue]]"
+      },
+      "MetaResponseModel_list_ShipTypeSchema__": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/MetaShipTypeSchema"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[list[ShipTypeSchema]]"
+      },
+      "MetaResponseModel_list_TimeZoneSchema__": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/MetaTimeZoneSchema"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[list[TimeZoneSchema]]"
+      },
+      "MetaShipTypeSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name_cn": {
+            "type": "string",
+            "title": "Name Cn"
+          },
+          "name_en": {
+            "type": "string",
+            "title": "Name En"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "cii_related_tone": {
+            "type": "string",
+            "title": "Cii Related Tone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name_cn",
+          "name_en",
+          "code",
+          "cii_related_tone"
+        ],
+        "title": "ShipTypeSchema",
+        "examples": [
+          {
+            "cii_related_tone": "dwt",
+            "code": "I004",
+            "id": 4,
+            "name_cn": "集装箱船",
+            "name_en": "Container ship"
+          }
+        ]
+      },
+      "MetaTimeZoneSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name_cn": {
+            "type": "string",
+            "title": "Name Cn"
+          },
+          "name_en": {
+            "type": "string",
+            "title": "Name En"
+          },
+          "explaination": {
+            "type": "string",
+            "title": "Explaination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name_cn",
+          "name_en",
+          "explaination"
+        ],
+        "title": "TimeZoneSchema",
+        "examples": [
+          {
+            "explaination": "东八区 112.5° E～127.5° E 120° E",
+            "id": 9,
+            "name_cn": "东八区",
+            "name_en": "UTC+8"
+          }
+        ]
+      },
+      "IdentityCompanyCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "contact_person": {
+            "type": "string",
+            "title": "Contact Person"
+          },
+          "contact_phone": {
+            "type": "string",
+            "title": "Contact Phone"
+          },
+          "contact_email": {
+            "type": "string",
+            "title": "Contact Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "address",
+          "contact_person",
+          "contact_phone",
+          "contact_email"
+        ],
+        "title": "CompanyCreate",
+        "examples": [
+          {
+            "address": "上海市浦东新区张江高科技园区",
+            "contact_email": "contact@shipping.com",
+            "contact_person": "张三",
+            "contact_phone": "13800000001",
+            "name": "远洋航运有限公司"
+          }
+        ]
+      },
+      "IdentityCompanySchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "contact_person": {
+            "type": "string",
+            "title": "Contact Person"
+          },
+          "contact_phone": {
+            "type": "string",
+            "title": "Contact Phone"
+          },
+          "contact_email": {
+            "type": "string",
+            "title": "Contact Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "address",
+          "contact_person",
+          "contact_phone",
+          "contact_email"
+        ],
+        "title": "CompanySchema",
+        "examples": [
+          {
+            "address": "上海市浦东新区张江高科技园区",
+            "contact_email": "contact@shipping.com",
+            "contact_person": "张三",
+            "contact_phone": "13800000001",
+            "id": 1,
+            "name": "远洋航运有限公司"
+          }
+        ]
+      },
+      "IdentityCompanyUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "contact_person": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Person"
+          },
+          "contact_phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Phone"
+          },
+          "contact_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Email"
+          }
+        },
+        "type": "object",
+        "title": "CompanyUpdate",
+        "examples": [
+          {
+            "address": "北京市朝阳区建国路88号"
+          }
+        ]
+      },
+      "IdentityHTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/IdentityValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "IdentityResponseModel": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel",
+        "description": "Unified API response wrapper."
+      },
+      "IdentityResponseModel_CompanySchema_": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/IdentityCompanySchema"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[CompanySchema]"
+      },
+      "IdentityResponseModel_UserSchema_": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/IdentityUserSchema"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[UserSchema]"
+      },
+      "IdentityResponseModel_UserWithToken_": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/IdentityUserWithToken"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[UserWithToken]"
+      },
+      "IdentityResponseModel_list_CompanySchema__": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/IdentityCompanySchema"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[list[CompanySchema]]"
+      },
+      "IdentityResponseModel_list_UserSchema__": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/IdentityUserSchema"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[list[UserSchema]]"
+      },
+      "IdentityUserLoginData": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "UserLoginData",
+        "examples": [
+          {
+            "password": "mypassword",
+            "username": "captain_zhang"
+          }
+        ]
+      },
+      "IdentityUserRegisterData": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          },
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password",
+          "phone",
+          "company_id"
+        ],
+        "title": "UserRegisterData",
+        "examples": [
+          {
+            "company_id": 1,
+            "password": "mypassword",
+            "phone": "13900000001",
+            "username": "captain_zhang"
+          }
+        ]
+      },
+      "IdentityUserSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          },
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          },
+          "is_admin": {
+            "type": "boolean",
+            "title": "Is Admin"
+          },
+          "is_system_admin": {
+            "type": "boolean",
+            "title": "Is System Admin"
+          },
+          "disabled": {
+            "type": "boolean",
+            "title": "Disabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "phone",
+          "company_id",
+          "is_admin",
+          "is_system_admin",
+          "disabled"
+        ],
+        "title": "UserSchema",
+        "examples": [
+          {
+            "company_id": 1,
+            "disabled": false,
+            "id": 1,
+            "is_admin": false,
+            "is_system_admin": false,
+            "phone": "13900000001",
+            "username": "captain_zhang"
+          }
+        ]
+      },
+      "IdentityUserUpdate": {
+        "properties": {
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          }
+        },
+        "type": "object",
+        "title": "UserUpdate",
+        "examples": [
+          {
+            "phone": "13988888888"
+          }
+        ]
+      },
+      "IdentityUserWithToken": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          },
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          },
+          "is_admin": {
+            "type": "boolean",
+            "title": "Is Admin"
+          },
+          "is_system_admin": {
+            "type": "boolean",
+            "title": "Is System Admin"
+          },
+          "disabled": {
+            "type": "boolean",
+            "title": "Disabled"
+          },
+          "token": {
+            "type": "string",
+            "title": "Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "phone",
+          "company_id",
+          "is_admin",
+          "is_system_admin",
+          "disabled",
+          "token"
+        ],
+        "title": "UserWithToken",
+        "examples": [
+          {
+            "company_id": 1,
+            "disabled": false,
+            "id": 1,
+            "is_admin": false,
+            "is_system_admin": false,
+            "phone": "13900000001",
+            "username": "captain_zhang"
+          }
+        ]
+      },
+      "IdentityValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VesselCurveDataCreate": {
+        "properties": {
+          "speed_water": {
+            "type": "number",
+            "title": "Speed Water"
+          },
+          "me_power": {
+            "type": "number",
+            "title": "Me Power"
+          }
+        },
+        "type": "object",
+        "required": [
+          "speed_water",
+          "me_power"
+        ],
+        "title": "CurveDataCreate",
+        "examples": [
+          {
+            "me_power": 4500.0,
+            "speed_water": 12.0
+          }
+        ]
+      },
+      "VesselCurveDataSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "speed_water": {
+            "type": "number",
+            "title": "Speed Water"
+          },
+          "me_power": {
+            "type": "number",
+            "title": "Me Power"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "speed_water",
+          "me_power"
+        ],
+        "title": "CurveDataSchema",
+        "examples": [
+          {
+            "id": 1,
+            "me_power": 4500.0,
+            "speed_water": 12.0
+          }
+        ]
+      },
+      "VesselEquipmentCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "fuel_type_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Fuel Type Ids",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "type"
+        ],
+        "title": "EquipmentCreate",
+        "examples": [
+          {
+            "fuel_type_ids": [
+              1
+            ],
+            "name": "主机",
+            "type": "me"
+          }
+        ]
+      },
+      "VesselEquipmentSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "fuel_type_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Fuel Type Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "fuel_type_ids"
+        ],
+        "title": "EquipmentSchema",
+        "examples": [
+          {
+            "fuel_type_ids": [
+              1
+            ],
+            "name": "主机",
+            "type": "me"
+          }
+        ]
+      },
+      "VesselHTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/VesselValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "VesselPowerSpeedCurveCreate": {
+        "properties": {
+          "curve_name": {
+            "type": "string",
+            "title": "Curve Name"
+          },
+          "draft_astern": {
+            "type": "number",
+            "title": "Draft Astern"
+          },
+          "draft_bow": {
+            "type": "number",
+            "title": "Draft Bow"
+          },
+          "curve_data": {
+            "items": {
+              "$ref": "#/components/schemas/VesselCurveDataCreate"
+            },
+            "type": "array",
+            "title": "Curve Data",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "curve_name",
+          "draft_astern",
+          "draft_bow"
+        ],
+        "title": "PowerSpeedCurveCreate",
+        "examples": [
+          {
+            "curve_data": [
+              {
+                "me_power": 2800.0,
+                "speed_water": 10.0
+              },
+              {
+                "me_power": 4500.0,
+                "speed_water": 12.0
+              },
+              {
+                "me_power": 7200.0,
+                "speed_water": 14.0
+              },
+              {
+                "me_power": 9800.0,
+                "speed_water": 15.5
+              }
+            ],
+            "curve_name": "满载",
+            "draft_astern": 10.5,
+            "draft_bow": 9.8
+          }
+        ]
+      },
+      "VesselPowerSpeedCurveSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "curve_name": {
+            "type": "string",
+            "title": "Curve Name"
+          },
+          "draft_astern": {
+            "type": "number",
+            "title": "Draft Astern"
+          },
+          "draft_bow": {
+            "type": "number",
+            "title": "Draft Bow"
+          },
+          "curve_data": {
+            "items": {
+              "$ref": "#/components/schemas/VesselCurveDataSchema"
+            },
+            "type": "array",
+            "title": "Curve Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "curve_name",
+          "draft_astern",
+          "draft_bow",
+          "curve_data"
+        ],
+        "title": "PowerSpeedCurveSchema",
+        "examples": [
+          {
+            "curve_data": [
+              {
+                "id": 1,
+                "me_power": 2800.0,
+                "speed_water": 10.0
+              },
+              {
+                "id": 2,
+                "me_power": 4500.0,
+                "speed_water": 12.0
+              },
+              {
+                "id": 3,
+                "me_power": 7200.0,
+                "speed_water": 14.0
+              },
+              {
+                "id": 4,
+                "me_power": 9800.0,
+                "speed_water": 15.5
+              }
+            ],
+            "curve_name": "满载",
+            "draft_astern": 10.5,
+            "draft_bow": 9.8,
+            "id": 1
+          }
+        ]
+      },
+      "VesselResponseModel": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel",
+        "description": "Unified API response wrapper."
+      },
+      "VesselResponseModel_NoneType_": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "type": "null",
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[NoneType]"
+      },
+      "VesselResponseModel_VesselSchema_": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/VesselVesselSchema"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[VesselSchema]"
+      },
+      "VesselResponseModel_list_VesselSchema__": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/VesselVesselSchema"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[list[VesselSchema]]"
+      },
+      "VesselValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VesselVesselCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "mmsi": {
+            "type": "string",
+            "title": "Mmsi"
+          },
+          "ship_type": {
+            "type": "integer",
+            "title": "Ship Type"
+          },
+          "build_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Build Date"
+          },
+          "gross_tone": {
+            "type": "number",
+            "title": "Gross Tone"
+          },
+          "dead_weight": {
+            "type": "number",
+            "title": "Dead Weight"
+          },
+          "new_vessel": {
+            "type": "boolean",
+            "title": "New Vessel",
+            "default": false
+          },
+          "pitch": {
+            "type": "number",
+            "title": "Pitch",
+            "default": 6.058
+          },
+          "hull_clean_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hull Clean Date"
+          },
+          "engine_overhaul_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Engine Overhaul Date"
+          },
+          "newly_paint_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Newly Paint Date"
+          },
+          "propeller_polish_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Propeller Polish Date"
+          },
+          "time_zone": {
+            "type": "integer",
+            "title": "Time Zone",
+            "default": 1
+          },
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          },
+          "equipments": {
+            "items": {
+              "$ref": "#/components/schemas/VesselEquipmentCreate"
+            },
+            "type": "array",
+            "title": "Equipments",
+            "default": []
+          },
+          "curves": {
+            "items": {
+              "$ref": "#/components/schemas/VesselPowerSpeedCurveCreate"
+            },
+            "type": "array",
+            "title": "Curves",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "mmsi",
+          "ship_type",
+          "build_date",
+          "gross_tone",
+          "dead_weight",
+          "company_id"
+        ],
+        "title": "VesselCreate",
+        "examples": [
+          {
+            "build_date": "2019-11-01",
+            "company_id": 1,
+            "curves": [
+              {
+                "curve_data": [
+                  {
+                    "me_power": 2800.0,
+                    "speed_water": 10.0
+                  },
+                  {
+                    "me_power": 4500.0,
+                    "speed_water": 12.0
+                  },
+                  {
+                    "me_power": 7200.0,
+                    "speed_water": 14.0
+                  },
+                  {
+                    "me_power": 9800.0,
+                    "speed_water": 15.5
+                  }
+                ],
+                "curve_name": "满载",
+                "draft_astern": 10.5,
+                "draft_bow": 9.8
+              },
+              {
+                "curve_data": [
+                  {
+                    "me_power": 2600.0,
+                    "speed_water": 11.0
+                  },
+                  {
+                    "me_power": 4200.0,
+                    "speed_water": 13.0
+                  },
+                  {
+                    "me_power": 6800.0,
+                    "speed_water": 15.0
+                  }
+                ],
+                "curve_name": "压载",
+                "draft_astern": 6.2,
+                "draft_bow": 5.5
+              }
+            ],
+            "dead_weight": 35337.0,
+            "engine_overhaul_date": "2022-03-01",
+            "equipments": [
+              {
+                "fuel_type_ids": [
+                  1
+                ],
+                "name": "主机",
+                "type": "me"
+              },
+              {
+                "fuel_type_ids": [
+                  1,
+                  7
+                ],
+                "name": "副机",
+                "type": "dg"
+              },
+              {
+                "fuel_type_ids": [
+                  1,
+                  7
+                ],
+                "name": "锅炉",
+                "type": "blr"
+              }
+            ],
+            "gross_tone": 26771.0,
+            "hull_clean_date": "2023-06-15",
+            "mmsi": "477401900",
+            "name": "八打雁",
+            "new_vessel": false,
+            "newly_paint_date": "2023-06-15",
+            "pitch": 6.058,
+            "propeller_polish_date": "2023-06-15",
+            "ship_type": 4,
+            "time_zone": 1
+          }
+        ]
+      },
+      "VesselVesselSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "mmsi": {
+            "type": "string",
+            "title": "Mmsi"
+          },
+          "ship_type": {
+            "type": "integer",
+            "title": "Ship Type"
+          },
+          "build_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Build Date"
+          },
+          "gross_tone": {
+            "type": "number",
+            "title": "Gross Tone"
+          },
+          "dead_weight": {
+            "type": "number",
+            "title": "Dead Weight"
+          },
+          "new_vessel": {
+            "type": "boolean",
+            "title": "New Vessel"
+          },
+          "pitch": {
+            "type": "number",
+            "title": "Pitch"
+          },
+          "hull_clean_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hull Clean Date"
+          },
+          "engine_overhaul_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Engine Overhaul Date"
+          },
+          "newly_paint_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Newly Paint Date"
+          },
+          "propeller_polish_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Propeller Polish Date"
+          },
+          "time_zone": {
+            "type": "integer",
+            "title": "Time Zone"
+          },
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "equipments": {
+            "items": {
+              "$ref": "#/components/schemas/VesselEquipmentSchema"
+            },
+            "type": "array",
+            "title": "Equipments"
+          },
+          "curves": {
+            "items": {
+              "$ref": "#/components/schemas/VesselPowerSpeedCurveSchema"
+            },
+            "type": "array",
+            "title": "Curves"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "mmsi",
+          "ship_type",
+          "build_date",
+          "gross_tone",
+          "dead_weight",
+          "new_vessel",
+          "pitch",
+          "hull_clean_date",
+          "engine_overhaul_date",
+          "newly_paint_date",
+          "propeller_polish_date",
+          "time_zone",
+          "company_id",
+          "created_at",
+          "equipments",
+          "curves"
+        ],
+        "title": "VesselSchema",
+        "examples": [
+          {
+            "build_date": "2019-11-01",
+            "company_id": 1,
+            "created_at": "2024-01-15T08:30:00",
+            "curves": [
+              {
+                "curve_data": [
+                  {
+                    "id": 1,
+                    "me_power": 2800.0,
+                    "speed_water": 10.0
+                  },
+                  {
+                    "id": 2,
+                    "me_power": 4500.0,
+                    "speed_water": 12.0
+                  },
+                  {
+                    "id": 3,
+                    "me_power": 7200.0,
+                    "speed_water": 14.0
+                  },
+                  {
+                    "id": 4,
+                    "me_power": 9800.0,
+                    "speed_water": 15.5
+                  }
+                ],
+                "curve_name": "满载",
+                "draft_astern": 10.5,
+                "draft_bow": 9.8,
+                "id": 1
+              }
+            ],
+            "dead_weight": 35337.0,
+            "engine_overhaul_date": "2022-03-01",
+            "equipments": [
+              {
+                "fuel_type_ids": [
+                  1
+                ],
+                "name": "主机",
+                "type": "me"
+              },
+              {
+                "fuel_type_ids": [
+                  1,
+                  7
+                ],
+                "name": "副机",
+                "type": "dg"
+              },
+              {
+                "fuel_type_ids": [
+                  1,
+                  7
+                ],
+                "name": "锅炉",
+                "type": "blr"
+              }
+            ],
+            "gross_tone": 26771.0,
+            "hull_clean_date": "2023-06-15",
+            "id": 1,
+            "mmsi": "477401900",
+            "name": "八打雁",
+            "new_vessel": false,
+            "newly_paint_date": "2023-06-15",
+            "pitch": 6.058,
+            "propeller_polish_date": "2023-06-15",
+            "ship_type": 4,
+            "time_zone": 1
+          }
+        ]
+      },
+      "VesselVesselUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "mmsi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mmsi"
+          },
+          "ship_type": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ship Type"
+          },
+          "build_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Date"
+          },
+          "gross_tone": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Tone"
+          },
+          "dead_weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dead Weight"
+          },
+          "new_vessel": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Vessel"
+          },
+          "pitch": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pitch"
+          },
+          "hull_clean_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hull Clean Date"
+          },
+          "engine_overhaul_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Engine Overhaul Date"
+          },
+          "newly_paint_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Newly Paint Date"
+          },
+          "propeller_polish_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Propeller Polish Date"
+          },
+          "time_zone": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Zone"
+          },
+          "company_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Id"
+          },
+          "equipments": {
+            "items": {
+              "$ref": "#/components/schemas/VesselEquipmentCreate"
+            },
+            "type": "array",
+            "title": "Equipments",
+            "default": []
+          },
+          "curves": {
+            "items": {
+              "$ref": "#/components/schemas/VesselPowerSpeedCurveCreate"
+            },
+            "type": "array",
+            "title": "Curves",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "VesselUpdate",
+        "examples": [
+          {
+            "build_date": "2019-11-01",
+            "company_id": 1,
+            "curves": [
+              {
+                "curve_data": [
+                  {
+                    "me_power": 2800.0,
+                    "speed_water": 10.0
+                  },
+                  {
+                    "me_power": 4500.0,
+                    "speed_water": 12.0
+                  },
+                  {
+                    "me_power": 7200.0,
+                    "speed_water": 14.0
+                  },
+                  {
+                    "me_power": 9800.0,
+                    "speed_water": 15.5
+                  }
+                ],
+                "curve_name": "满载",
+                "draft_astern": 10.5,
+                "draft_bow": 9.8
+              }
+            ],
+            "dead_weight": 35337.0,
+            "engine_overhaul_date": "2023-09-01",
+            "equipments": [
+              {
+                "fuel_type_ids": [
+                  1
+                ],
+                "name": "主机",
+                "type": "me"
+              },
+              {
+                "fuel_type_ids": [
+                  1,
+                  7
+                ],
+                "name": "副机",
+                "type": "dg"
+              },
+              {
+                "fuel_type_ids": [
+                  1,
+                  7
+                ],
+                "name": "锅炉",
+                "type": "blr"
+              }
+            ],
+            "gross_tone": 26771.0,
+            "hull_clean_date": "2024-01-10",
+            "mmsi": "477401900",
+            "name": "八打雁",
+            "new_vessel": false,
+            "newly_paint_date": "2024-01-10",
+            "pitch": 6.058,
+            "propeller_polish_date": "2024-01-10",
+            "ship_type": 4,
+            "time_zone": 1
+          }
+        ]
+      },
+      "DataBody_upload_standard_csv_upload_vessel__vessel_id__standard_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File",
+            "description": "CSV 标准数据文件"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_standard_csv_upload_vessel__vessel_id__standard_post"
+      },
+      "DataDailyDataSchema": {
+        "properties": {
+          "vessel_id": {
+            "type": "integer",
+            "title": "Vessel Id"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "speed_ground": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speed Ground"
+          },
+          "speed_water": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speed Water"
+          },
+          "me_shaft_power": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Me Shaft Power"
+          },
+          "me_rpm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Me Rpm"
+          },
+          "me_fuel_consumption_nmile": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Me Fuel Consumption Nmile"
+          },
+          "me_hfo_act_cons": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Me Hfo Act Cons"
+          },
+          "me_mgo_act_cons": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Me Mgo Act Cons"
+          },
+          "blr_hfo_act_cons": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blr Hfo Act Cons"
+          },
+          "blr_mgo_act_cons": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blr Mgo Act Cons"
+          },
+          "dg_hfo_act_cons": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dg Hfo Act Cons"
+          },
+          "dg_mgo_act_cons": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dg Mgo Act Cons"
+          },
+          "slip_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slip Ratio"
+          },
+          "draft": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draft"
+          },
+          "wind_speed": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wind Speed"
+          },
+          "cii_temp": {
+            "type": "number",
+            "title": "Cii Temp"
+          },
+          "cii": {
+            "type": "number",
+            "title": "Cii"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vessel_id",
+          "date",
+          "speed_ground",
+          "speed_water",
+          "me_shaft_power",
+          "me_rpm",
+          "me_fuel_consumption_nmile",
+          "me_hfo_act_cons",
+          "me_mgo_act_cons",
+          "blr_hfo_act_cons",
+          "blr_mgo_act_cons",
+          "dg_hfo_act_cons",
+          "dg_mgo_act_cons",
+          "slip_ratio",
+          "draft",
+          "wind_speed",
+          "cii_temp",
+          "cii"
+        ],
+        "title": "DailyDataSchema"
+      },
+      "DataHTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/DataValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "DataResponseModel": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel",
+        "description": "Unified API response wrapper."
+      },
+      "DataResponseModel_UploadAccepted_": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/DataUploadAccepted"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[UploadAccepted]"
+      },
+      "DataResponseModel_UploadStatusSchema_": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "$ref": "#/components/schemas/DataUploadStatusSchema"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[UploadStatusSchema]"
+      },
+      "DataResponseModel_list_DailyDataSchema__": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/DataDailyDataSchema"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[list[DailyDataSchema]]"
+      },
+      "DataResponseModel_list_UploadStatusSchema__": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 200
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/DataUploadStatusSchema"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ResponseModel[list[UploadStatusSchema]]"
+      },
+      "DataUploadAccepted": {
+        "properties": {
+          "upload_id": {
+            "type": "integer",
+            "title": "Upload Id"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "上传成功，后台处理中"
+          }
+        },
+        "type": "object",
+        "required": [
+          "upload_id"
+        ],
+        "title": "UploadAccepted"
+      },
+      "DataUploadStatusSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "vessel_id": {
+            "type": "integer",
+            "title": "Vessel Id"
+          },
+          "file_path": {
+            "type": "string",
+            "title": "File Path"
+          },
+          "date_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date Start"
+          },
+          "date_end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date End"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "vessel_id",
+          "file_path",
+          "date_start",
+          "date_end",
+          "status",
+          "error_message",
+          "created_at",
+          "completed_at"
+        ],
+        "title": "UploadStatusSchema"
+      },
+      "DataValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

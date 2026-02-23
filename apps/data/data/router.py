@@ -4,7 +4,16 @@ import logging
 from typing import Annotated
 
 from common.schemas import ResponseModel
-from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Path, Query, UploadFile
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    HTTPException,
+    Path,
+    Query,
+    UploadFile,
+)
 from sqlalchemy.orm import Session
 
 from data.config import settings

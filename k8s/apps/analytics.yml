@@ -1,0 +1,119 @@
+# ── analytics 服务 ────────────────────────────────────────────────────────────
+# 统计分析与优化建议微服务：只读 DuckDB + 跨服务 HTTP 调用
+# 端口 8004，NodePort 30005
+#
+# 存储卷：
+#   data-storage (只读挂载) — 读取 data 服务写入的 data.duckdb（与 data 服务共享同一 PVC）
+#   analytics-models (5Gi) — XGBoost pkl 模型文件（可选，不部署时 ML 端点返回 404）
+#
+# 依赖：
+#   - data 服务必须先于 analytics 启动（DuckDB 文件须已初始化）
+#   - vessel 服务（http://vessel.services.svc.cluster.local:8002）
+#   - meta 服务（http://meta.services.svc.cluster.local:8000）
+#
+# 注意：data-storage 为 ReadWriteOnce，data 和 analytics 须在同一节点。
+#       Kind 单节点集群天然满足此要求；生产多节点集群建议改用 NFS/CSI PVC。
+# ─────────────────────────────────────────────────────────────────────────────
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: analytics-models
+  namespace: services
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics
+  namespace: services
+  labels:
+    app: analytics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: analytics
+  template:
+    metadata:
+      labels:
+        app: analytics
+    spec:
+      # analytics 只读挂载 data-storage，必须与 data pod 在同一节点
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: data
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: analytics
+          image: analytics-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8004
+          env:
+            - name: DUCK_DB_PATH
+              value: "/data/data.duckdb"
+            - name: VESSEL_SERVICE_URL
+              value: "http://vessel.services.svc.cluster.local:8002"
+            - name: META_SERVICE_URL
+              value: "http://meta.services.svc.cluster.local:8000"
+            - name: MODELS_DIR
+              value: "/models"
+            - name: LOG_LEVEL
+              value: "INFO"
+          volumeMounts:
+            - name: duck-data
+              mountPath: /data
+              readOnly: true
+            - name: models
+              mountPath: /models
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8004
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8004
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      volumes:
+        - name: duck-data
+          persistentVolumeClaim:
+            claimName: data-storage   # 与 data 服务共享同一 PVC
+            readOnly: true
+        - name: models
+          persistentVolumeClaim:
+            claimName: analytics-models
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics
+  namespace: services
+spec:
+  type: NodePort
+  selector:
+    app: analytics
+  ports:
+    - port: 8004
+      targetPort: 8004
+      nodePort: 30005

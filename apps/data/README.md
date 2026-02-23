@@ -60,6 +60,7 @@ CSV 文件
   ├──► vessel_original_data (DuckDB) ← 保留完整原始数据
   │
   ▼ data_preparation(df, pitch)
+      ├── normalize_columns()    # PascalCase → snake_case 列名映射
       ├── data_nulls()           # 删除含 null 行
       ├── 类型强制转换            # pd.to_numeric()
       ├── draft_calculation()    # 平均吃水 = (艉吃水 + 艏吃水) / 2
@@ -162,6 +163,43 @@ pending → processing → done
 
 ---
 
+## CSV 格式要求
+
+### 支持的列名格式
+
+`pipeline.normalize_columns()` 自动将数据采集系统输出的 **PascalCase 列名**映射为管道内部的 **snake_case 名**，两种格式均可上传：
+
+| CSV 列名（PascalCase）| 内部字段名（snake_case）|
+|---|---|
+| `PCDate` | `date` |
+| `PCTime` | `time` |
+| `ShipSpdToWater` | `speed_water` |
+| `ShipSpd` | `speed_ground` |
+| `ShipDraughtBow` | `draught_bow` |
+| `ShipDraughtAstern` | `draught_astern` |
+| `ShipTrim` | `trim` |
+| `MERpm` | `me_rpm` |
+| `MEShaftPow` | `me_shaft_power` |
+| `MESFOC_kw` | `me_fuel_consumption_kwh` |
+| `MESFOC_nmile` | `me_fuel_consumption_nmile` |
+| `MEActFOCons` | `me_hfo_act_cons` |
+| `MEActMGOCons` | `me_mgo_act_cons` |
+| `DGActFOCons` | `dg_hfo_act_cons` |
+| `BlrActFOCons` | `blr_hfo_act_cons` |
+| `BlrActMGOCons` | `blr_mgo_act_cons` |
+| `WindSpd` | `wind_speed` |
+| `WindDir` | `wind_direction` |
+| `Latitude` / `Longitude` | `latitude` / `longitude` |
+
+> **注意**：未在映射表中的列（如 `ShipSlip`、`ShipDraft`、`windPower`）会在写入 DuckDB 时自动跳过（`PRAGMA table_info` 列名白名单过滤）。
+
+### CII 计算前提
+
+CII 依赖燃油实际消耗列（`me_hfo_act_cons`、`dg_hfo_act_cons` 等）。
+若上传的 CSV 不含这些列（如预处理后的汇总文件），则 `cii_temp` 和 `cii` 字段将保持 `0.0`，查询时返回 `null`。
+
+---
+
 ## 数据清洗规则（pipeline.py）
 
 ### 异常值过滤（data_abnormal_removal）
@@ -234,6 +272,24 @@ uv run pytest -v
 ```
 
 15 个测试覆盖：健康检查、上传 202、空文件/非 CSV 400、历史分页、状态 404、日均数据、pipeline 单元测试。
+
+### 端到端测试（真实 CSV）
+
+```bash
+# 使用真实数据抽样（前 200 行）进行端到端验证
+head -201 /path/to/b2022_cleaned.csv > /tmp/test_sample.csv
+
+curl -F "file=@/tmp/test_sample.csv" \
+     "http://localhost:8003/upload/vessel/1/standard?pitch=6.058"
+# → 202 {"data": {"upload_id": 1}, "message": "上传成功，后台处理中"}
+
+# 轮询直到 done
+curl "http://localhost:8003/upload/1/status"
+# → {"status": "done", "date_start": "2022-01-01", "date_end": "2022-01-08"}
+
+curl "http://localhost:8003/daily/vessel/1?limit=5"
+# → 返回日均数据，缺失燃油列的字段显示 null（不影响其他字段）
+```
 
 ---
 

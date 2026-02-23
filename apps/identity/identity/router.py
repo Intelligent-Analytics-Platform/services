@@ -175,7 +175,7 @@ def update_user(
 @user_router.delete(
     "/{user_id}",
     summary="删除用户",
-    description="软删除：将用户标记为 disabled=true，数据保留。被禁用的用户无法登录，GET 时返回 404。",
+    description="软删除：disabled=true，数据保留。被禁用用户无法登录，GET 返回 404。",
 )
 def delete_user(
     user_id: int,

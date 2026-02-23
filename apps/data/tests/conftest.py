@@ -1,19 +1,15 @@
 """Test fixtures for the data service."""
 
-import io
-
 import duckdb
 import pytest
 from common.models import Base
+from data.app import create_app
+from data.config import Settings
+from data.database import get_db, init_duck_db
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-
-from data.app import create_app
-from data.config import Settings
-from data.database import get_db, init_duck_db
-
 
 # ── Minimal valid CSV for upload tests ──────────────────────────────────────
 
@@ -41,8 +37,7 @@ _ROW_TEMPLATE = (
 )
 
 SAMPLE_CSV = "\n".join(
-    [_HEADER]
-    + [_ROW_TEMPLATE.format(date=f"2024/01/1{i}") for i in range(5, 8)]
+    [_HEADER] + [_ROW_TEMPLATE.format(date=f"2024/01/1{i}") for i in range(5, 8)]
 )
 
 

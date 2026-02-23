@@ -5,7 +5,6 @@ Ported from backend/app/core/data_utils.py.
 
 import pandas as pd
 
-
 # ── CO2 emission factor ──────────────────────────────────────────────────────
 
 
@@ -37,6 +36,67 @@ def get_cf(fuel_col_name: str) -> float:
     return 0.0
 
 
+# ── Column normalisation ─────────────────────────────────────────────────────
+
+# Mapping from raw CSV column names (PascalCase from data logger) to snake_case
+# pipeline field names. Only columns that need renaming are listed.
+_CSV_RENAME: dict[str, str] = {
+    "PCDate": "date",
+    "PCTime": "time",
+    "ShipSpdToWater": "speed_water",
+    "ShipSpd": "speed_ground",
+    "ShipHeel": "heel",
+    "ShipTrim": "trim",
+    "ShipDraughtBow": "draught_bow",
+    "ShipDraughtAstern": "draught_astern",
+    "ShipDraughtMidLft": "draught_mid_left",
+    "ShipDraughtMidRgt": "draught_mid_right",
+    "MERpm": "me_rpm",
+    "METorque": "me_torque",
+    "MEShaftPow": "me_shaft_power",
+    "MESFOC_kw": "me_fuel_consumption_kwh",
+    "MESFOC_nmile": "me_fuel_consumption_nmile",
+    "MEActFOCons": "me_hfo_act_cons",
+    "MEActMGOCons": "me_mgo_act_cons",
+    "MEAccFOCons": "me_hfo_acc_cons",
+    "DGActFOCons": "dg_hfo_act_cons",
+    "DGActMGOCons": "dg_mgo_act_cons",
+    "DGAccFOCons": "dg_hfo_acc_cons",
+    "DGAccMGOCons": "dg_mgo_acc_cons",
+    "BlrActFOCons": "blr_hfo_act_cons",
+    "BlrActMGOCons": "blr_mgo_act_cons",
+    "BlrAccFOCons": "blr_hfo_acc_cons",
+    "BlrAccMGOCons": "blr_mgo_acc_cons",
+    "FCMFODensity": "fcm_fo_density",
+    "DGFODensity": "dg_fo_density",
+    "DGMGODensity": "dg_mgo_density",
+    "BlrFODensity": "blr_fo_density",
+    "BlrMGODensity": "blr_mgo_density",
+    "MEFOInTemp": "me_fo_in_temp",
+    "DGFOInTemp": "dg_fo_in_temp",
+    "DGMGOInTemp": "dg_mgo_in_temp",
+    "BlrFOInTemp": "blr_fo_in_temp",
+    "BlrMGOInTemp": "blr_mgo_in_temp",
+    "DG1Power": "dg1_power",
+    "DG2Power": "dg2_power",
+    "DG3Power": "dg3_power",
+    "WindSpd": "wind_speed",
+    "WindDir": "wind_direction",
+    "Latitude": "latitude",
+    "Longitude": "longitude",
+}
+
+
+def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Rename raw CSV columns to the snake_case names expected by the pipeline.
+
+    Columns already in snake_case are left untouched, so the function is safe
+    to call on both raw (PascalCase) and pre-normalised DataFrames.
+    """
+    rename = {k: v for k, v in _CSV_RENAME.items() if k in df.columns}
+    return df.rename(columns=rename)
+
+
 # ── Derived field calculations ───────────────────────────────────────────────
 
 
@@ -63,7 +123,9 @@ def slip_ratio_calculation(df: pd.DataFrame, pitch: float = 6.058) -> None:
     df["me_rpm"] = pd.to_numeric(df["me_rpm"], errors="coerce")
     df["speed_water"] = pd.to_numeric(df["speed_water"], errors="coerce")
 
-    valid = (df["me_rpm"] != 0) & (df["speed_water"] != 0) & df["me_rpm"].notna() & df["speed_water"].notna()
+    rpm_ok = (df["me_rpm"] != 0) & df["me_rpm"].notna()
+    spd_ok = (df["speed_water"] != 0) & df["speed_water"].notna()
+    valid = rpm_ok & spd_ok
     df["slip_ratio"] = 0.0
     df.loc[valid, "slip_ratio"] = (
         1 - (df.loc[valid, "speed_water"] / (df.loc[valid, "me_rpm"] * pitch * 60)) * 1852
@@ -152,6 +214,7 @@ def data_preparation(df: pd.DataFrame, pitch: float = 6.058) -> pd.DataFrame:
     Returns:
         Cleaned DataFrame (may be empty if no rows pass all filters).
     """
+    df = normalize_columns(df)
     df = data_nulls(df)
 
     for col in _NUMERIC_COLS:

@@ -156,6 +156,43 @@ Grafana 访问：`http://localhost:3000`（默认无需登录）
 
 ---
 
+## OpenAPI 文档（前端对接）
+
+`docs/openapi.json` 是四个服务合并后的 OpenAPI 3.1 规范，可直接导入 Postman / Insomnia / Swagger UI / openapi-generator。
+
+```bash
+make gen-docs   # 重新生成（输出 docs/openapi.json）
+```
+
+### 关键设计
+
+- **路径无冲突**：各服务使用不同 URL 前缀（`/meta/*`、`/company|user/*`、`/vessel/*`、`/upload|daily/*`），合并后路径唯一
+- **path-level servers**：每条路径通过 `servers` 字段标明实际服务地址，工具据此路由到正确端口
+- **Schema 隔离**：组件名加服务前缀（`MetaFuelType`、`VesselSchema` 等），避免同名冲突
+
+### 导入示例
+
+**Postman**：Collection → Import → 选择 `docs/openapi.json`
+
+**Swagger UI（本地预览）**：
+```bash
+docker run -p 8080:8080 \
+  -e SWAGGER_JSON=/docs/openapi.json \
+  -v $(pwd)/docs:/docs \
+  swaggerapi/swagger-ui
+# 访问 http://localhost:8080
+```
+
+**openapi-generator（生成 TypeScript SDK）**：
+```bash
+npx @openapitools/openapi-generator-cli generate \
+  -i docs/openapi.json \
+  -g typescript-axios \
+  -o frontend/src/api
+```
+
+---
+
 ## CI
 
 GitHub Actions（`.github/workflows/ci.yml`）在每次 push/PR 时：

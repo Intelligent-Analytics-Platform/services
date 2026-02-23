@@ -61,7 +61,8 @@ def test_get_history_empty(client):
 def test_get_history_after_upload(client):
     files = {"file": ("test.csv", io.BytesIO(SAMPLE_CSV.encode()), "text/csv")}
     client.post("/upload/vessel/2/standard", files=files)
-    client.post("/upload/vessel/2/standard", files={"file": ("test.csv", io.BytesIO(SAMPLE_CSV.encode()), "text/csv")})
+    files2 = {"file": ("test.csv", io.BytesIO(SAMPLE_CSV.encode()), "text/csv")}
+    client.post("/upload/vessel/2/standard", files=files2)
 
     r = client.get("/upload/vessel/2/history")
     assert r.status_code == 200
@@ -118,7 +119,6 @@ def test_get_cf_unknown():
 
 def test_data_preparation_returns_dataframe(tmp_path):
     import pandas as pd
-
     from data.pipeline import data_preparation
 
     # Build a minimal valid dataframe
@@ -141,7 +141,6 @@ def test_data_preparation_returns_dataframe(tmp_path):
         "me_hfo_act_cons": 2.5,
         "dg_hfo_act_cons": 0.3,
         "blr_hfo_act_cons": 0.5,
-        "speed_water": 11.5,
     }
     df = pd.DataFrame([row] * 5)
     result = data_preparation(df)
@@ -150,7 +149,6 @@ def test_data_preparation_returns_dataframe(tmp_path):
 
 def test_data_preparation_empty_on_all_filtered(tmp_path):
     import pandas as pd
-
     from data.pipeline import data_preparation
 
     # All rows will fail the me_shaft_power > 0 filter

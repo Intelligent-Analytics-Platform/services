@@ -1,7 +1,8 @@
 """Business logic for data upload and processing pipeline."""
 
 import logging
-from datetime import datetime, timezone
+import math
+from datetime import UTC, datetime
 from pathlib import Path
 
 import duckdb
@@ -35,7 +36,11 @@ class DataService:
 
     def create_upload_record(self, vessel_id: int, file_path: str) -> VesselDataUpload:
         upload = VesselDataUpload(vessel_id=vessel_id, file_path=file_path)
-        return self.repo.create(upload)
+        result = self.repo.create(upload)
+        # Commit immediately so the background task (which opens its own session)
+        # can find this record by ID as soon as it starts.
+        self.session.commit()
+        return result
 
     def get_upload_status(self, upload_id: int) -> VesselDataUpload:
         return self.repo.get_or_raise(upload_id)
@@ -75,6 +80,7 @@ class DataService:
             session.commit()
 
             df = pd.read_csv(file_path)
+            df = pipeline.normalize_columns(df)  # map PascalCase CSV headers to snake_case
             logger.info("upload %d: read %d rows from %s", upload_id, len(df), file_path)
 
             with get_duck_conn() as conn:
@@ -86,9 +92,7 @@ class DataService:
                 df_clean = pipeline.data_preparation(df.copy(), pitch)
                 logger.info("upload %d: %d rows after cleaning", upload_id, len(df_clean))
                 if not df_clean.empty:
-                    DataService._insert_telemetry(
-                        conn, "vessel_standard_data", vessel_id, df_clean
-                    )
+                    DataService._insert_telemetry(conn, "vessel_standard_data", vessel_id, df_clean)
                     DataService._upsert_per_day(conn, vessel_id, df_clean)
 
                     # Step 3: CII
@@ -98,8 +102,9 @@ class DataService:
 
             # Derive date range from raw data
             date_col = df.get("date") if "date" in df.columns else None
-            date_start = pd.to_datetime(date_col, errors="coerce").min().date() if date_col is not None else None
-            date_end = pd.to_datetime(date_col, errors="coerce").max().date() if date_col is not None else None
+            parsed = pd.to_datetime(date_col, errors="coerce") if date_col is not None else None
+            date_start = parsed.min().date() if parsed is not None else None
+            date_end = parsed.max().date() if parsed is not None else None
 
             repo.update(
                 upload,
@@ -107,7 +112,7 @@ class DataService:
                     "status": "done",
                     "date_start": date_start,
                     "date_end": date_end,
-                    "completed_at": datetime.now(tz=timezone.utc),
+                    "completed_at": datetime.now(tz=UTC),
                 },
             )
             session.commit()
@@ -123,7 +128,7 @@ class DataService:
                     {
                         "status": "failed",
                         "error_message": str(exc)[:1000],
-                        "completed_at": datetime.now(tz=timezone.utc),
+                        "completed_at": datetime.now(tz=UTC),
                     },
                 )
                 session.commit()
@@ -145,10 +150,17 @@ class DataService:
 
         DuckDB can reference local pandas DataFrames by variable name directly.
         INSERT BY NAME maps DataFrame columns to table columns by name.
+        Extra columns in the DataFrame that don't exist in the table are dropped
+        first, so CSVs with varying schemas work without errors.
         """
         df = df.copy()
         df["vessel_id"] = vessel_id
         df["created_at"] = pd.Timestamp.now()
+
+        # Drop columns the table doesn't have (DuckDB BY NAME errors on extras)
+        table_cols = DataService._table_cols(conn, table)
+        df = df[[c for c in df.columns if c in table_cols]]
+
         conn.register("_telemetry_df", df)
         conn.execute(
             f"INSERT INTO {table} BY NAME "  # noqa: S608
@@ -157,12 +169,21 @@ class DataService:
         conn.unregister("_telemetry_df")
 
     @staticmethod
-    def _upsert_per_day(
-        conn: duckdb.DuckDBPyConnection, vessel_id: int, df: pd.DataFrame
-    ) -> None:
+    def _table_cols(conn: duckdb.DuckDBPyConnection, table: str) -> set[str]:
+        """Return the set of column names for a DuckDB table."""
+        return {row[1] for row in conn.execute(f"PRAGMA table_info('{table}')").fetchall()}  # noqa: S608
+
+    @staticmethod
+    def _upsert_per_day(conn: duckdb.DuckDBPyConnection, vessel_id: int, df: pd.DataFrame) -> None:
         """Aggregate df by date (mean) and upsert into vessel_data_per_day."""
         daily = df.groupby("date").mean(numeric_only=True).reset_index()
         daily["vessel_id"] = vessel_id
+        # Ensure date column is a proper Python date (not string) so DuckDB can
+        # compare it against the DATE column in vessel_data_per_day.
+        daily["date"] = pd.to_datetime(daily["date"], errors="coerce").dt.date
+        # Drop columns not present in the target table (same as _insert_telemetry)
+        table_cols = DataService._table_cols(conn, "vessel_data_per_day")
+        daily = daily[[c for c in daily.columns if c in table_cols]]
 
         # Remove existing rows for these dates, then insert
         conn.register("_daily_df", daily)
@@ -171,15 +192,11 @@ class DataService:
             "WHERE vessel_id = $1 AND date IN (SELECT date FROM _daily_df)",
             [vessel_id],
         )
-        conn.execute(
-            "INSERT INTO vessel_data_per_day BY NAME SELECT * FROM _daily_df"
-        )
+        conn.execute("INSERT INTO vessel_data_per_day BY NAME SELECT * FROM _daily_df")
         conn.unregister("_daily_df")
 
     @staticmethod
-    def _calculate_cii_temp(
-        conn: duckdb.DuckDBPyConnection, vessel_id: int, c: float
-    ) -> None:
+    def _calculate_cii_temp(conn: duckdb.DuckDBPyConnection, vessel_id: int, c: float) -> None:
         """Calculate CII_temp for daily records using SQL.
 
         CII_temp = Σ (cons_col / speed_water) * (CF * 1000 / C)
@@ -230,9 +247,7 @@ class DataService:
     # ── Query helpers ────────────────────────────────────────────────────────
 
     @staticmethod
-    def get_daily_data(
-        vessel_id: int, offset: int = 0, limit: int = 100
-    ) -> list[dict]:
+    def get_daily_data(vessel_id: int, offset: int = 0, limit: int = 100) -> list[dict]:
         """Return daily aggregated data for a vessel from DuckDB."""
         with get_duck_conn() as conn:
             result = conn.execute(
@@ -252,13 +267,18 @@ class DataService:
                 """,
                 [vessel_id, limit, offset],
             ).df()
-        return result.to_dict(orient="records")
+        # Replace NaN with None (JSON-serialisable null)
+        rows = result.to_dict(orient="records")
+        return [
+            {k: None if isinstance(v, float) and math.isnan(v) else v for k, v in row.items()}
+            for row in rows
+        ]
 
     @staticmethod
     def save_upload_file(file_bytes: bytes, vessel_name: str, upload_dir: str) -> str:
         """Write uploaded bytes to disk and return the relative file path."""
-        today = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
-        ts = datetime.now(tz=timezone.utc).strftime("%Y%m%d_%H%M%S")
+        today = datetime.now(tz=UTC).strftime("%Y-%m-%d")
+        ts = datetime.now(tz=UTC).strftime("%Y%m%d_%H%M%S")
         rel_path = f"{upload_dir}/{today}/{vessel_name}-{ts}.csv"
         full_path = Path(rel_path)
         full_path.parent.mkdir(parents=True, exist_ok=True)

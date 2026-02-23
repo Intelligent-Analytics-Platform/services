@@ -55,7 +55,7 @@ class TestShipType:
         resp = client.get("/meta/ship_type")
         by_code = {t["code"]: t for t in resp.json()["data"]}
         assert by_code["I001"]["cii_related_tone"] == "dwt"  # Bulk carrier
-        assert by_code["I009"]["cii_related_tone"] == "gt"   # Ro-ro (vehicle carrier)
+        assert by_code["I009"]["cii_related_tone"] == "gt"  # Ro-ro (vehicle carrier)
 
 
 class TestTimeZone:
