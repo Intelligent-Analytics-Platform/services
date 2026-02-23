@@ -1,20 +1,21 @@
 [project]
-name = "common"
+name = "vessel"
 version = "0.1.0"
-description = "微服务公共库 - 数据库、仓储、异常、响应模型"
+description = "船舶管理微服务 - 船舶信息、设备、动力曲线"
 requires-python = ">=3.12"
 dependencies = [
-    "sqlalchemy>=2.0",
-    "pydantic>=2.0",
+    "common",
     "fastapi>=0.115",
-    "pyjwt>=2.10",
-    "bcrypt>=4.3",
-    "python-json-logger>=2.0",
+    "pydantic-settings>=2.0",
+    "uvicorn[standard]>=0.30",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.uv.sources]
+common = { workspace = true }
 
 [dependency-groups]
 dev = [

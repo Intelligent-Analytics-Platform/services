@@ -1,5 +1,7 @@
-.PHONY: install lint format test test-common test-meta test-identity \
-       run-meta run-identity build-meta build-identity clean
+.PHONY: install lint format test test-common test-meta test-identity test-vessel \
+       run-meta run-identity run-vessel \
+       build-meta build-identity build-vessel \
+       up-obs down-obs clean
 
 # 安装所有依赖
 install:
@@ -16,7 +18,7 @@ format:
 	uv run ruff format .
 
 # 运行所有测试
-test: test-common test-meta test-identity
+test: test-common test-meta test-identity test-vessel
 
 # common 单元测试
 test-common:
@@ -30,12 +32,19 @@ test-meta:
 test-identity:
 	cd apps/identity && uv run pytest -v
 
+# vessel API 测试
+test-vessel:
+	cd apps/vessel && uv run pytest -v
+
 # 本地运行
 run-meta:
 	cd apps/meta && uv run uvicorn meta.app:app --reload --host 0.0.0.0 --port 8000
 
 run-identity:
 	cd apps/identity && uv run uvicorn identity.app:app --reload --host 0.0.0.0 --port 8001
+
+run-vessel:
+	cd apps/vessel && uv run uvicorn vessel.app:app --reload --host 0.0.0.0 --port 8002
 
 # Docker 构建
 build-meta:
@@ -44,8 +53,18 @@ build-meta:
 build-identity:
 	docker build -f apps/identity/Dockerfile -t identity-service .
 
+build-vessel:
+	docker build -f apps/vessel/Dockerfile -t vessel-service .
+
+# 可观测性（Loki + Grafana + Promtail）
+up-obs:
+	docker compose -f docker-compose.observability.yml up -d
+
+down-obs:
+	docker compose -f docker-compose.observability.yml down
+
 # 清理缓存
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
-	rm -f apps/meta/meta.db apps/identity/identity.db
+	rm -f apps/meta/meta.db apps/identity/identity.db apps/vessel/vessel.db

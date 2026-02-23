@@ -8,6 +8,7 @@ from common.exceptions import (
     ValidationError,
     setup_exception_handlers,
 )
+from common.logging import setup_logging
 from common.models import Base, IntIDMixin, TimestampMixin
 from common.repository import BaseRepository
 from common.schemas import ResponseModel
@@ -30,4 +31,5 @@ __all__ = [
     "setup_exception_handlers",
     "create_engine_from_url",
     "get_session",
+    "setup_logging",
 ]

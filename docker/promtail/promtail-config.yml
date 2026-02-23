@@ -1,0 +1,47 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: containers
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+
+    relabel_configs:
+      # Keep only containers from this project
+      - source_labels: [__meta_docker_container_label_com_docker_compose_project]
+        regex: services
+        action: keep
+      # Use compose service name as the 'service' label
+      - source_labels: [__meta_docker_container_label_com_docker_compose_service]
+        target_label: service
+      # Use container name as the instance label
+      - source_labels: [__meta_docker_container_name]
+        regex: /(.+)
+        target_label: instance
+
+    pipeline_stages:
+      # Parse JSON log lines emitted by python-json-logger
+      - json:
+          expressions:
+            level: level
+            logger: logger
+            service: service
+            message: message
+      # Promote parsed fields to Loki labels (for fast filtering)
+      - labels:
+          level:
+          service:
+      # Use the JSON timestamp as the log entry timestamp
+      - timestamp:
+          source: timestamp
+          format: "2006-01-02T15:04:05Z07:00"
+          fallback_formats:
+            - "2006-01-02T15:04:05.000000Z07:00"
