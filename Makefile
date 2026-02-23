@@ -1,7 +1,9 @@
 .PHONY: install lint format test test-common test-meta test-identity test-vessel \
        run-meta run-identity run-vessel \
        build-meta build-identity build-vessel \
-       up-obs down-obs clean
+       up-obs down-obs \
+       kind-create kind-delete kind-load kind-apply kind-delete-apps \
+       clean
 
 # 安装所有依赖
 install:
@@ -62,6 +64,40 @@ up-obs:
 
 down-obs:
 	docker compose -f docker-compose.observability.yml down
+
+# Kind 集群管理
+kind-create:
+	kind create cluster --config k8s/kind-config.yml
+
+kind-delete:
+	kind delete cluster --name iap
+
+# 拉取可观测性镜像（首次）
+kind-pull-obs:
+	docker pull grafana/loki:3.0.0
+	docker pull grafana/promtail:3.0.0
+	docker pull grafana/grafana:latest
+
+# 构建并加载所有镜像到 Kind
+kind-load: build-meta build-identity build-vessel
+	kind load docker-image meta-service:latest --name iap
+	kind load docker-image identity-service:latest --name iap
+	kind load docker-image vessel-service:latest --name iap
+	kind load docker-image grafana/loki:3.0.0 --name iap
+	kind load docker-image grafana/promtail:3.0.0 --name iap
+	kind load docker-image grafana/grafana:latest --name iap
+
+# 部署所有服务到 Kind
+kind-apply:
+	kubectl apply -f k8s/namespace.yml
+	kubectl apply -f k8s/apps/
+	kubectl apply -f k8s/observability/
+
+# 删除所有应用（保留集群）
+kind-delete-apps:
+	kubectl delete -f k8s/observability/ --ignore-not-found
+	kubectl delete -f k8s/apps/ --ignore-not-found
+	kubectl delete -f k8s/namespace.yml --ignore-not-found
 
 # 清理缓存
 clean:

@@ -31,4 +31,4 @@ class TimeZone(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name_cn: Mapped[str] = mapped_column(String(50))
     name_en: Mapped[str] = mapped_column(String(100))
-    explaination: Mapped[str] = mapped_column(String(20))
+    explaination: Mapped[str] = mapped_column(String(100))

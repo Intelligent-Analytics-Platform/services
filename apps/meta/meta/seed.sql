@@ -1,0 +1,62 @@
+-- 燃料类型种子数据
+INSERT INTO fuel_type (name_abbr, name_cn, name_en, cf) VALUES
+    ('HFO-HS',  '重燃油 (HFO) 硫含量高于0.5% m/m',                    'HFO, S>0.5% m/m',                      3.114),
+    ('HFO-LS',  '重燃油 (HFO) 硫含量不高于0.1% m/m, 但不高于0.5% m/m', 'HFO, 0.1% m/m<=S<=0.5% m/m',           3.114),
+    ('HFO-ULS', '重燃油 (HFO) 硫含量不高于0.1% m/m',                   'HFO, S<=0.1% m/m',                      3.114),
+    ('LFO-HS',  '轻燃油 (LFO) 硫含量高于0.5% m/m',                    'LFO, S>0.5% m/m',                       3.151),
+    ('LFO-LS',  '轻燃油 (LFO) 硫含量不高于0.1% m/m, 但不高于0.5% m/m', 'LFO, 0.1% m/m<=S<=0.5% m/m',           3.151),
+    ('LFO-ULS', '轻燃油 (LFO) 硫含量不高于0.1% m/m',                   'LFO, S<=0.1% m/m',                      3.151),
+    ('MDO/MGO', '船用柴油',                                             'MDO/MGO',                               3.206),
+    ('MDO/MGO-RIVER', '内河船用燃料油',                                  'MDO/MGO for River Boat',                3.206),
+    ('LPG-Propane', '液化石油气 (LPG) 丙烷',                            'LPG-Propane',                           3.0),
+    ('LPG-Butane',  '液化石油气 (LPG) 丁烷',                            'LPG-Butane',                            3.03),
+    ('LNG',      '液化天然气 (LNG)',                                     'Liquefied Natural Gas (LNG)',            2.75),
+    ('Methanol', '甲醇',                                                'Methanol',                              1.375),
+    ('Ethanol',  '乙醇',                                                'Ethanol',                               1.913),
+    ('Ethane',   '乙烷',                                                'Ethane',                                2.927),
+    ('Ammonia',  '氨',                                                  'Ammonia',                               0.0),
+    ('Hydrogen', '氢',                                                  'Hydrogen',                              0.0);
+
+-- 船舶类型种子数据（IMO CII 规定分类）
+INSERT INTO ship_type (name_cn, name_en, code, cii_related_tone) VALUES
+    ('散货船',               'Bulk carrier',                            'I001',   'dwt'),
+    ('气体运输船',            'Gas carrier',                             'I002',   'dwt'),
+    ('液货船',               'Tanker',                                  'I003',   'dwt'),
+    ('集装箱船',              'Container ship',                          'I004',   'dwt'),
+    ('杂货船',               'General cargo ship',                      'I005',   'dwt'),
+    ('冷藏货船',              'Refrigerated cargo carrier',              'I006',   'dwt'),
+    ('兼用船',               'Combination carrier',                     'I007',   'dwt'),
+    ('LNG运输船',            'LNG carrier',                             'I008',   'dwt'),
+    ('滚装货船（车辆运输船）', 'Ro-ro cargo ship (vehicle carrier)',      'I009',   'gt'),
+    ('滚装货船',              'Ro-ro cargo ship',                        'I010',   'gt'),
+    ('客滚船',               'Ro-ro passenger ship',                    'I011',   'gt'),
+    ('客滚船(高速)',           'Ro-ro passenger ship (high-speed craft)', 'I011.1', 'gt'),
+    ('豪华邮轮',              'Cruise passenger ship',                   'I012',   'gt');
+
+-- 时区种子数据（UTC-12 至 UTC+12，共 25 个标准时区）
+INSERT INTO time_zone (name_cn, name_en, explaination) VALUES
+    ('零时区',  'UTC+0',  '零时区 7.5° W～7.5° E 0°'),
+    ('东一区',  'UTC+1',  '东一区 7.5° E～22.5° E 15° E'),
+    ('东二区',  'UTC+2',  '东二区 22.5° E～37.5° E 30° E'),
+    ('东三区',  'UTC+3',  '东三区 37.5° E～52.5° E 45° E'),
+    ('东四区',  'UTC+4',  '东四区 52.5° E～67.5° E 60° E'),
+    ('东五区',  'UTC+5',  '东五区 67.5° E～82.5° E 75° E'),
+    ('东六区',  'UTC+6',  '东六区 82.5° E～97.5° E 90° E'),
+    ('东七区',  'UTC+7',  '东七区 97.5° E～112.5° E 105° E'),
+    ('东八区',  'UTC+8',  '东八区 112.5° E～127.5° E 120° E'),
+    ('东九区',  'UTC+9',  '东九区 127.5° E～142.5° E 135° E'),
+    ('东十区',  'UTC+10', '东十区 142.5° E～157.5° E 150° E'),
+    ('东十一区', 'UTC+11', '东十一区 157.5° E～172.5° E 165° E'),
+    ('东十二区', 'UTC+12', '东十二区 172.5° E～180° E 180°'),
+    ('西一区',  'UTC-1',  '西一区 7.5° W～22.5° W 15° W'),
+    ('西二区',  'UTC-2',  '西二区 22.5° W～37.5° W 30° W'),
+    ('西三区',  'UTC-3',  '西三区 37.5° W～52.5° W 45° W'),
+    ('西四区',  'UTC-4',  '西四区 52.5° W～67.5° W 60° W'),
+    ('西五区',  'UTC-5',  '西五区 67.5° W～82.5° W 75° W'),
+    ('西六区',  'UTC-6',  '西六区 82.5° W～97.5° W 90° W'),
+    ('西七区',  'UTC-7',  '西七区 97.5° W～112.5° W 105° W'),
+    ('西八区',  'UTC-8',  '西八区 112.5° W～127.5° W 120° W'),
+    ('西九区',  'UTC-9',  '西九区 127.5° W～142.5° W 135° W'),
+    ('西十区',  'UTC-10', '西十区 142.5° W～157.5° W 150° W'),
+    ('西十一区', 'UTC-11', '西十一区 157.5° W～172.5° W 165° W'),
+    ('西十二区', 'UTC-12', '西十二区 172.5° W～180° W 180°');

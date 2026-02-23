@@ -66,9 +66,8 @@ class UserService:
         company_id: int | None = None,
         offset: int = 0,
         limit: int = 10,
-    ) -> list[dict]:
-        users = self.repo.list_users(name, company_id, offset, limit)
-        return [UserSchema.model_validate(u).model_dump() for u in users]
+    ) -> list[User]:
+        return self.repo.list_users(name, company_id, offset, limit)
 
     def create_user(self, data: UserRegisterData) -> User:
         user = User(
@@ -91,10 +90,9 @@ class UserService:
         return user
 
     def delete_user(self, user_id: int) -> User:
-        """Soft-delete by marking as disabled."""
+        """软删除：disabled=True，数据保留，等同于不存在。"""
         user = self.get_user_by_id(user_id)
-        user.disabled = True
-
+        self.repo.update(user, {"disabled": True})
         return user
 
     def authenticate_user(self, username: str, password: str) -> User:

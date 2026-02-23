@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     )
 
     database_url: str = "sqlite:///identity.db"
+    log_level: str = "INFO"
     debug: bool = False
     host: str = "0.0.0.0"
     port: int = 8001

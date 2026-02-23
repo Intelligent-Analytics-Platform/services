@@ -27,7 +27,11 @@ def get_company_service(session: Session = Depends(get_db)) -> CompanyService:
     return CompanyService(CompanyRepository(session))
 
 
-@company_router.get("", summary="获取所有公司")
+@company_router.get(
+    "",
+    summary="获取所有公司",
+    description="返回系统内所有公司列表，无分页。",
+)
 def get_companies(
     service: CompanyService = Depends(get_company_service),
 ) -> ResponseModel[list[CompanySchema]]:
@@ -36,7 +40,11 @@ def get_companies(
     return ResponseModel(data=data, message="获取公司列表成功")
 
 
-@company_router.post("", summary="创建公司")
+@company_router.post(
+    "",
+    summary="创建公司",
+    description="创建新公司。公司名称全局唯一。",
+)
 def create_company(
     body: CompanyCreate,
     service: CompanyService = Depends(get_company_service),
@@ -45,7 +53,11 @@ def create_company(
     return ResponseModel(data=CompanySchema.model_validate(company), message="公司创建成功")
 
 
-@company_router.get("/{company_id}", summary="获取单个公司详情")
+@company_router.get(
+    "/{company_id}",
+    summary="获取单个公司详情",
+    description="按 ID 获取公司信息。不存在时返回 404。",
+)
 def get_company(
     company_id: int,
     service: CompanyService = Depends(get_company_service),
@@ -54,7 +66,11 @@ def get_company(
     return ResponseModel(data=CompanySchema.model_validate(company), message="获取公司信息成功")
 
 
-@company_router.put("/{company_id}", summary="更新公司信息")
+@company_router.put(
+    "/{company_id}",
+    summary="更新公司信息",
+    description="部分更新公司信息，仅传入需要修改的字段。",
+)
 def update_company(
     company_id: int,
     body: CompanyUpdate,
@@ -64,7 +80,11 @@ def update_company(
     return ResponseModel(data=CompanySchema.model_validate(company), message="公司信息更新成功")
 
 
-@company_router.delete("/{company_id}", summary="删除公司")
+@company_router.delete(
+    "/{company_id}",
+    summary="删除公司",
+    description="硬删除公司记录。请确认该公司下无用户，否则会导致用户的 company_id 悬空。",
+)
 def delete_company(
     company_id: int,
     service: CompanyService = Depends(get_company_service),
@@ -82,7 +102,11 @@ def get_user_service(session: Session = Depends(get_db)) -> UserService:
     return UserService(UserRepository(session))
 
 
-@user_router.get("", summary="获取用户列表")
+@user_router.get(
+    "",
+    summary="获取用户列表",
+    description="获取未禁用的用户列表，支持按用户名模糊搜索和公司过滤，支持分页。",
+)
 def get_user_list(
     name: str | None = Query(None, description="用户名(模糊搜索)"),
     company_id: int | None = Query(None, description="公司ID"),
@@ -91,10 +115,15 @@ def get_user_list(
     service: UserService = Depends(get_user_service),
 ) -> ResponseModel[list[UserSchema]]:
     users = service.get_user_list(name, company_id, offset, limit)
-    return ResponseModel(data=users, message="获取成功")
+    data = [UserSchema.model_validate(u) for u in users]
+    return ResponseModel(data=data, message="获取成功")
 
 
-@user_router.post("/register", summary="注册用户")
+@user_router.post(
+    "/register",
+    summary="注册用户",
+    description="创建新用户，密码自动加密存储，响应中不包含密码字段。",
+)
 def register_user(
     body: UserRegisterData,
     service: UserService = Depends(get_user_service),
@@ -103,7 +132,11 @@ def register_user(
     return ResponseModel(data=UserSchema.model_validate(user), message="注册成功")
 
 
-@user_router.post("/login", summary="用户登录")
+@user_router.post(
+    "/login",
+    summary="用户登录",
+    description="验证用户名和密码，成功后返回用户信息及 JWT token。token 有效期由服务配置决定。",
+)
 def login(
     body: UserLoginData,
     service: UserService = Depends(get_user_service),
@@ -112,7 +145,11 @@ def login(
     return ResponseModel(data=result, message="登录成功")
 
 
-@user_router.get("/{user_id}", summary="获取用户信息")
+@user_router.get(
+    "/{user_id}",
+    summary="获取用户信息",
+    description="按 ID 获取用户信息。被禁用的用户等同于不存在，返回 404。",
+)
 def get_user(
     user_id: int,
     service: UserService = Depends(get_user_service),
@@ -121,7 +158,11 @@ def get_user(
     return ResponseModel(data=UserSchema.model_validate(user), message="获取成功")
 
 
-@user_router.put("/{user_id}", summary="更新用户信息")
+@user_router.put(
+    "/{user_id}",
+    summary="更新用户信息",
+    description="目前仅支持更新手机号。",
+)
 def update_user(
     user_id: int,
     body: UserUpdate,
@@ -131,7 +172,11 @@ def update_user(
     return ResponseModel(data=UserSchema.model_validate(user), message="更新成功")
 
 
-@user_router.delete("/{user_id}", summary="删除用户")
+@user_router.delete(
+    "/{user_id}",
+    summary="删除用户",
+    description="软删除：将用户标记为 disabled=true，数据保留。被禁用的用户无法登录，GET 时返回 404。",
+)
 def delete_user(
     user_id: int,
     service: UserService = Depends(get_user_service),

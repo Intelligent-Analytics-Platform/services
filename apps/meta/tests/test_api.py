@@ -16,14 +16,23 @@ class TestFuelType:
         assert resp.status_code == 200
         body = resp.json()
         assert body["code"] == 200
-        assert len(body["data"]) == 2
-        assert body["data"][0]["name_abbr"] == "LNG"
-        assert body["data"][0]["cf"] == 2.75
+        assert len(body["data"]) == 16
+        abbrs = [t["name_abbr"] for t in body["data"]]
+        assert "HFO-HS" in abbrs
+        assert "LNG" in abbrs
+        assert "Hydrogen" in abbrs
 
     def test_fuel_type_fields(self, client):
         resp = client.get("/meta/fuel_type")
         item = resp.json()["data"][0]
         assert set(item.keys()) == {"id", "name_cn", "name_en", "name_abbr", "cf"}
+
+    def test_fuel_type_cf_values(self, client):
+        resp = client.get("/meta/fuel_type")
+        by_abbr = {t["name_abbr"]: t for t in resp.json()["data"]}
+        assert by_abbr["LNG"]["cf"] == 2.75
+        assert by_abbr["Methanol"]["cf"] == 1.375
+        assert by_abbr["Ammonia"]["cf"] == 0.0
 
 
 class TestShipType:
@@ -31,13 +40,22 @@ class TestShipType:
         resp = client.get("/meta/ship_type")
         assert resp.status_code == 200
         body = resp.json()
-        assert len(body["data"]) == 2
-        assert body["data"][0]["code"] == "I1004"
+        assert len(body["data"]) == 13
+        codes = [t["code"] for t in body["data"]]
+        assert "I001" in codes
+        assert "I004" in codes
+        assert "I012" in codes
 
     def test_ship_type_fields(self, client):
         resp = client.get("/meta/ship_type")
         item = resp.json()["data"][0]
         assert set(item.keys()) == {"id", "name_cn", "name_en", "code", "cii_related_tone"}
+
+    def test_ship_type_cii_tones(self, client):
+        resp = client.get("/meta/ship_type")
+        by_code = {t["code"]: t for t in resp.json()["data"]}
+        assert by_code["I001"]["cii_related_tone"] == "dwt"  # Bulk carrier
+        assert by_code["I009"]["cii_related_tone"] == "gt"   # Ro-ro (vehicle carrier)
 
 
 class TestTimeZone:
@@ -45,13 +63,21 @@ class TestTimeZone:
         resp = client.get("/meta/time_zone")
         assert resp.status_code == 200
         body = resp.json()
-        assert len(body["data"]) == 2
-        assert body["data"][0]["explaination"] == "UTC+8"
+        assert len(body["data"]) == 25
+        names = [t["name_en"] for t in body["data"]]
+        assert "UTC+0" in names
+        assert "UTC+8" in names
+        assert "UTC-12" in names
 
     def test_time_zone_fields(self, client):
         resp = client.get("/meta/time_zone")
         item = resp.json()["data"][0]
         assert set(item.keys()) == {"id", "name_cn", "name_en", "explaination"}
+
+    def test_time_zone_explaination(self, client):
+        resp = client.get("/meta/time_zone")
+        by_name = {t["name_en"]: t for t in resp.json()["data"]}
+        assert "120° E" in by_name["UTC+8"]["explaination"]
 
 
 class TestAttributes:
@@ -69,6 +95,12 @@ class TestAttributes:
         item = resp.json()["data"][0]
         assert set(item.keys()) == {"attribute", "description"}
 
+    def test_attribute_descriptions_are_chinese(self, client):
+        resp = client.get("/meta/attributes")
+        by_attr = {a["attribute"]: a for a in resp.json()["data"]}
+        assert by_attr["speed_water"]["description"] == "对水航速"
+        assert by_attr["me_shaft_power"]["description"] == "主机功率"
+
 
 class TestAttributeMapping:
     def test_get_attribute_mapping(self, client):
@@ -84,6 +116,13 @@ class TestAttributeMapping:
         assert "attribute_right" in item
         assert "attribute" in item["attribute_left"]
         assert "description" in item["attribute_left"]
+
+    def test_mapping_pairs_are_valid(self, client):
+        resp = client.get("/meta/attribute_mapping")
+        lefts = [m["attribute_left"]["attribute"] for m in resp.json()["data"]]
+        assert "speed_water" in lefts
+        assert "me_rpm" in lefts
+        assert "me_shaft_power" in lefts
 
 
 class TestFuelTypeCategory:
