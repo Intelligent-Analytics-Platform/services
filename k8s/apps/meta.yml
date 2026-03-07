@@ -31,7 +31,7 @@ spec:
           image: meta-service:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 8000
+            - containerPort: 9000
           env:
             - name: DATABASE_URL
               value: "sqlite:////data/meta.db"
@@ -50,7 +50,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /
-              port: 8000
+              port: 9000
             initialDelaySeconds: 5
             periodSeconds: 10
       volumes:
@@ -68,6 +68,6 @@ spec:
   selector:
     app: meta
   ports:
-    - port: 8000
-      targetPort: 8000
+    - port: 9000
+      targetPort: 9000
       nodePort: 30000

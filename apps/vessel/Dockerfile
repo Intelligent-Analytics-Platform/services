@@ -11,6 +11,6 @@ COPY apps/vessel/ apps/vessel/
 WORKDIR /app/apps/vessel
 RUN uv sync --frozen --no-cache
 
-EXPOSE 8002
+EXPOSE 9002
 
-CMD ["uv", "run", "uvicorn", "vessel.app:app", "--host", "0.0.0.0", "--port", "8002"]
+CMD ["uv", "run", "uvicorn", "vessel.app:app", "--host", "0.0.0.0", "--port", "9002"]

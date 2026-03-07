@@ -1,6 +1,6 @@
 # ── data 服务 ─────────────────────────────────────────────────────────────────
 # 遥测数据微服务：CSV 上传 → 数据清洗 → DuckDB 存储 → CII 计算
-# 端口 8003，NodePort 30004
+# 端口 9003，NodePort 30004
 #
 # 存储卷：
 #   data-storage (20Gi)  — SQLite (data.db) + DuckDB (data.duckdb)
@@ -55,7 +55,7 @@ spec:
           image: data-service:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 8003
+            - containerPort: 9003
           env:
             - name: DATABASE_URL
               value: "sqlite:////data/data.db"
@@ -82,13 +82,13 @@ spec:
           readinessProbe:
             httpGet:
               path: /
-              port: 8003
+              port: 9003
             initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
-              port: 8003
+              port: 9003
             initialDelaySeconds: 30
             periodSeconds: 30
       volumes:
@@ -110,6 +110,6 @@ spec:
   selector:
     app: data
   ports:
-    - port: 8003
-      targetPort: 8003
+    - port: 9003
+      targetPort: 9003
       nodePort: 30004

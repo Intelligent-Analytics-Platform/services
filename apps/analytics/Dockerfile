@@ -15,7 +15,7 @@ RUN uv sync --package analytics --no-dev
 
 ENV PYTHONPATH=/app
 
-EXPOSE 8004
+EXPOSE 9004
 
 CMD ["uv", "run", "--package", "analytics", "uvicorn", "analytics.app:app", \
-     "--host", "0.0.0.0", "--port", "8004"]
+     "--host", "0.0.0.0", "--port", "9004"]

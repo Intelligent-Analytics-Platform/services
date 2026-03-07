@@ -38,11 +38,14 @@ def create_app() -> FastAPI:
     )
 
     setup_exception_handlers(application)
+    logging.getLogger("uvicorn.access").disabled = True
 
     @application.middleware("http")
     async def log_requests(request: Request, call_next):
         start = time.monotonic()
         response = await call_next(request)
+        if request.method == "GET" and request.url.path == "/" and response.status_code == 200:
+            return response
         duration_ms = round((time.monotonic() - start) * 1000)
         logger.info(
             "%s %s %s",

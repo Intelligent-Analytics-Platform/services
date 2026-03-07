@@ -1,0 +1,59 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: services-ingress
+  namespace: services
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /meta
+            pathType: Prefix
+            backend:
+              service:
+                name: meta
+                port:
+                  number: 9000
+          - path: /company
+            pathType: Prefix
+            backend:
+              service:
+                name: identity
+                port:
+                  number: 9001
+          - path: /user
+            pathType: Prefix
+            backend:
+              service:
+                name: identity
+                port:
+                  number: 9001
+          - path: /vessel
+            pathType: Prefix
+            backend:
+              service:
+                name: vessel
+                port:
+                  number: 9002
+          - path: /upload
+            pathType: Prefix
+            backend:
+              service:
+                name: data
+                port:
+                  number: 9003
+          - path: /daily
+            pathType: Prefix
+            backend:
+              service:
+                name: data
+                port:
+                  number: 9003
+          - path: /analytics
+            pathType: Prefix
+            backend:
+              service:
+                name: analytics
+                port:
+                  number: 9004

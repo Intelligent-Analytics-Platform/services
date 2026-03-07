@@ -1,6 +1,6 @@
 # ── analytics 服务 ────────────────────────────────────────────────────────────
 # 统计分析与优化建议微服务：只读 DuckDB + 跨服务 HTTP 调用
-# 端口 8004，NodePort 30005
+# 端口 9004，NodePort 30005
 #
 # 存储卷：
 #   data-storage (只读挂载) — 读取 data 服务写入的 data.duckdb（与 data 服务共享同一 PVC）
@@ -8,8 +8,8 @@
 #
 # 依赖：
 #   - data 服务必须先于 analytics 启动（DuckDB 文件须已初始化）
-#   - vessel 服务（http://vessel.services.svc.cluster.local:8002）
-#   - meta 服务（http://meta.services.svc.cluster.local:8000）
+#   - vessel 服务（http://vessel.services.svc.cluster.local:9002）
+#   - meta 服务（http://meta.services.svc.cluster.local:9000）
 #
 # 注意：data-storage 为 ReadWriteOnce，data 和 analytics 须在同一节点。
 #       Kind 单节点集群天然满足此要求；生产多节点集群建议改用 NFS/CSI PVC。
@@ -57,14 +57,14 @@ spec:
           image: analytics-service:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 8004
+            - containerPort: 9004
           env:
             - name: DUCK_DB_PATH
               value: "/data/data.duckdb"
             - name: VESSEL_SERVICE_URL
-              value: "http://vessel.services.svc.cluster.local:8002"
+              value: "http://vessel.services.svc.cluster.local:9002"
             - name: META_SERVICE_URL
-              value: "http://meta.services.svc.cluster.local:8000"
+              value: "http://meta.services.svc.cluster.local:9000"
             - name: MODELS_DIR
               value: "/models"
             - name: LOG_LEVEL
@@ -85,13 +85,13 @@ spec:
           readinessProbe:
             httpGet:
               path: /
-              port: 8004
+              port: 9004
             initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
-              port: 8004
+              port: 9004
             initialDelaySeconds: 30
             periodSeconds: 30
       volumes:
@@ -114,6 +114,6 @@ spec:
   selector:
     app: analytics
   ports:
-    - port: 8004
-      targetPort: 8004
+    - port: 9004
+      targetPort: 9004
       nodePort: 30005
