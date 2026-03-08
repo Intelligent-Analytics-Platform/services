@@ -1,6 +1,6 @@
 # AGENTS.md
 
-> AI 助手开发指南。阅读此文件了解项目架构、规范和常用命令。
+> AI 助手开发指南（统一版）。阅读此文件了解项目架构、开发原则、规范和常用命令。
 
 ## 项目概览
 
@@ -26,6 +26,30 @@ services/
 - **测试**: pytest + TestClient
 - **Linter**: ruff
 - **包管理**: uv
+
+## 开发原则
+
+> 回复请用中文。
+
+### 1. 追求可测试
+
+- 每个模块必须有对应的单元测试，逻辑写在可被独立测试的函数/类中
+- 依赖通过参数注入（Repository、Session），不在业务代码内直接创建
+- 测试使用内存 SQLite + StaticPool，不依赖真实数据库或外部服务
+- 新增端点前先写测试，确保测试覆盖正常路径和错误路径
+
+### 2. 文档即记忆，是团队的共享工具
+
+- OpenAPI 文档是对外契约：每个 schema 必须有 `json_schema_extra.examples`，端点必须有 `summary`
+- 代码注释只写“为什么”，不写“是什么”
+- 本文档是 AI 和人类协作的唯一上下文入口，保持简洁、随代码演进更新
+
+### 3. 代码精简，less is more
+
+- 不为假设的未来需求写代码，只解决当下实际问题
+- 三行相似代码优于一个过早的抽象
+- 删除比添加更需要勇气：无用代码及时删除
+- 依赖选择：能用标准库解决的不引入第三方
 
 ## 开发规范
 
@@ -148,6 +172,17 @@ make gen-docs
 - 保持与现有代码风格一致
 - 修改代码后确保测试通过
 - 中文注释和文档，代码命名用英文
+- 敏感信息（账号、密码、Token）只放本地私有文件（如 `./.secrets/*.env`），禁止写入仓库文档
+
+## 数据文件统一目录
+
+- 所有本地数据库文件统一放在：`/Users/lee/services/data`
+- 当前默认路径约定：
+    - `meta`: `data/meta.db`
+    - `identity`: `data/identity.db`
+    - `vessel`: `data/vessel.db`
+    - `data`: `data/data.db` + `data/data.duckdb`
+    - `analytics`: 只读 `data/data.duckdb`，不单独持有 `analytics.db`
 
 ## 数据迁移（MySQL -> seed.sql）
 
@@ -170,6 +205,13 @@ make gen-docs
     - `apps/vessel/vessel/seed.sql`
 5. 在本地运行服务并验证启动时可正确执行 seed。
 
+### SQLite 兼容口径（重要）
+
+- 生成 `seed.sql` 时，字段必须与当前 SQLAlchemy 模型一致
+- 若 MySQL 存在模型未定义字段（如历史 `created_at`），导出时需剔除
+- 若源数据不满足当前约束（如外键为空但模型要求非空），必须在迁移说明中明确过滤策略
+- 导入顺序固定为：`vessel -> equipment -> equipment_fuel -> power_speed_curve -> curve_data`
+
 ### mysqldump 示例
 
 ```bash
@@ -181,3 +223,13 @@ MYSQL_PWD="$MYSQL_PASSWORD" mysqldump -h "$MYSQL_HOST" -P "$MYSQL_PORT" -u "$MYS
 
 - 生成后执行对应服务测试：`make test-meta` / `make test-identity` / `make test-vessel`。
 - 确保 `seed.sql` 可重复执行或在启动逻辑中具备幂等保护。
+
+### 运行态复核（本地 + K8s）
+
+- 本地复核：直接查询 SQLite 行数与主键样本
+- K8s 复核：
+    1. 确认 Deployment 的 `DATABASE_URL`
+    2. 必要时删除 PVC 内旧库后再同步新库
+    3. `kubectl rollout restart deploy/<service> -n services`
+    4. 通过 API 复核数据是否与源一致
+- 对账建议至少包含：`count(*)`、主键列表、关键业务字段（如 `name` / `mmsi`）
