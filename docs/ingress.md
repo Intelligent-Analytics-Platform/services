@@ -18,7 +18,8 @@
 │  │   │                    Port Mappings                          │     │    │
 │  │   │   9080 → 80 (HTTP)                                        │     │    │
 │  │   │   9443 → 443 (HTTPS)                                      │     │    │
-│  │   │   9000-9005 → 30000-30005 (NodePort)                      │     │    │
+│  │   │   9000/9001/9002/9004/9005 → 30000/1/2/4/5 (应用)         │     │    │
+│  │   │   3000 → 30003 (Grafana)                                  │     │    │
 │  │   └──────────────────────────────────────────────────────────┘     │    │
 │  │                              │                                      │    │
 │  │                              ▼                                      │    │
@@ -129,7 +130,7 @@
 | vessel | 9002 | /vessel | 船舶管理服务 |
 | data | 9004 | /upload, /daily | 遥测数据服务 |
 | analytics | 9005 | /analytics | 分析服务 |
-| Grafana | 9003 | - | 日志可视化 |
+| Grafana | 3000 | - | 日志可视化 |
 
 ## 访问方式
 
@@ -172,6 +173,15 @@ curl -k https://localhost:9443/meta/
 | data | http://localhost:9004/docs |
 | analytics | http://localhost:9005/docs |
 
+### 4. 可观测性入口
+
+| 组件 | URL | 说明 |
+|------|-----|------|
+| Grafana | http://localhost:3000 | 默认入口，已预置 `Meta Service Overview` 看板 |
+| Loki Readiness | http://localhost:9100/ready | Loki 健康检查 |
+
+> 说明：`9003` 已预留给业务应用，不再用于 Grafana。
+
 ## 数据库访问
 
 ### SQLite 文件路径
@@ -211,7 +221,7 @@ kubectl cp services/$(kubectl get pod -n services -l app=vessel -o jsonpath='{.i
 | 9000 | 30000 | meta NodePort |
 | 9001 | 30001 | identity NodePort |
 | 9002 | 30002 | vessel NodePort |
-| 9003 | 30003 | Grafana NodePort |
+| 3000 | 30003 | Grafana NodePort |
 | 9004 | 30004 | data NodePort |
 | 9005 | 30005 | analytics NodePort |
 | 9080 | 80 | Ingress HTTP |

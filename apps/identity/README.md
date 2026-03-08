@@ -134,7 +134,7 @@ uv run uvicorn identity.app:app --reload --port 8001
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `DATABASE_URL` | `sqlite:///identity.db` | 数据库连接串 |
+| `DATABASE_URL` | `sqlite:////Users/lee/services/data/identity.db` | 数据库连接串 |
 | `JWT_SECRET_KEY` | `change-me-in-production` | **生产环境必须修改** |
 | `JWT_ALGORITHM` | `HS256` | JWT 签名算法 |
 | `JWT_EXPIRE_MINUTES` | `30` | token 有效期（分钟） |

@@ -1,11 +1,15 @@
 """Environment variable configuration for the analytics service."""
 
+from pathlib import Path
+
 from pydantic_settings import BaseSettings
+
+_DATA_DIR = Path(__file__).resolve().parents[3] / "data"
 
 
 class Settings(BaseSettings):
     # Path to the DuckDB file written by the data service (opened read-only here)
-    duck_db_path: str = "../data/data.duckdb"
+    duck_db_path: str = (_DATA_DIR / "data.duckdb").as_posix()
 
     # Downstream service URLs
     vessel_service_url: str = "http://localhost:8002"

@@ -148,3 +148,36 @@ make gen-docs
 - 保持与现有代码风格一致
 - 修改代码后确保测试通过
 - 中文注释和文档，代码命名用英文
+
+## 数据迁移（MySQL -> seed.sql）
+
+当需要生成各服务 `seed.sql` 时，数据源来自本地 MySQL。
+
+### 连接信息
+
+- Host: `127.0.0.1`
+- Port: `3306`
+- User / Password: 使用本地私有配置文件（建议 `./.secrets/mysql.local.env`），不要写入仓库文档。
+
+### 推荐流程
+
+1. 先在 MySQL 中确认目标库和目标表（按服务划分：`meta` / `identity` / `vessel` / `data`）。
+2. 使用 `mysqldump` 导出目标表结构和数据。
+3. 将 MySQL 方言转换为 SQLite 兼容 SQL（去掉 ENGINE、CHARSET、AUTO_INCREMENT、反引号等）。
+4. 按服务写入对应的 `seed.sql`：
+    - `apps/meta/meta/seed.sql`
+    - `apps/identity/identity/seed.sql`
+    - `apps/vessel/vessel/seed.sql`
+5. 在本地运行服务并验证启动时可正确执行 seed。
+
+### mysqldump 示例
+
+```bash
+source ./.secrets/mysql.local.env
+MYSQL_PWD="$MYSQL_PASSWORD" mysqldump -h "$MYSQL_HOST" -P "$MYSQL_PORT" -u "$MYSQL_USER" <database_name> <table_name> > /tmp/<table_name>.sql
+```
+
+### 验证建议
+
+- 生成后执行对应服务测试：`make test-meta` / `make test-identity` / `make test-vessel`。
+- 确保 `seed.sql` 可重复执行或在启动逻辑中具备幂等保护。

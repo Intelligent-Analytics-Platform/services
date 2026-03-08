@@ -30,7 +30,8 @@
 | 9000 | 30000 | meta 服务 |
 | 9001 | 30001 | identity 服务 |
 | 9002 | 30002 | vessel 服务 |
-| 9003 | 30003 | 预留 |
+| 3000 | 30003 | Grafana |
+| 9003 | - | 预留给应用 |
 | 9004 | 30004 | data 服务 |
 | 9005 | 30005 | analytics 服务 |
 | 9080 | 80 | Ingress HTTP |
@@ -57,7 +58,7 @@ kind load docker-image meta-service:latest --name iap
 
 # 3. 安装 Ingress 控制器
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=120s
+kubectl rollout status deployment/ingress-nginx-controller -n ingress-nginx --timeout=180s
 
 # 4. 部署服务
 kubectl apply -f k8s/namespace.yml
@@ -78,12 +79,13 @@ curl http://localhost:9001/           # identity
 curl http://localhost:9002/           # vessel
 curl http://localhost:9004/           # data
 curl http://localhost:9005/           # analytics
+curl http://localhost:3000/           # grafana
 ```
 
 **通过 Ingress（统一入口）：**
 ```bash
 curl http://localhost:9080/meta/fuel_type
-curl http://localhost:9080/identity/company
+curl http://localhost:9080/company
 curl http://localhost:9080/vessel/
 ```
 

@@ -279,7 +279,7 @@ uv run pytest -v
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `DUCK_DB_PATH` | `../data/data.duckdb` | data 服务的 DuckDB 文件路径（只读访问） |
+| `DUCK_DB_PATH` | `/Users/lee/services/data/data.duckdb` | data 服务的 DuckDB 文件路径（只读访问） |
 | `VESSEL_SERVICE_URL` | `http://localhost:8002` | vessel 服务地址 |
 | `META_SERVICE_URL` | `http://localhost:8000` | meta 服务地址 |
 | `MODELS_DIR` | `./models` | XGBoost pkl 模型目录 |

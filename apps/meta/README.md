@@ -127,7 +127,7 @@ uv run uvicorn meta.app:app --reload --port 8000
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `DATABASE_URL` | `sqlite:///meta.db` | 数据库连接串 |
+| `DATABASE_URL` | `sqlite:////Users/lee/services/data/meta.db` | 数据库连接串 |
 | `LOG_LEVEL` | `INFO` | 日志级别 |
 
 ---

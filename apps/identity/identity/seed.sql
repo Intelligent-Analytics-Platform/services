@@ -1,10 +1,10 @@
--- 测试种子数据（仅用于开发环境）
--- 测试用户密码：test1234
+-- 从本地 MySQL 同步的种子数据（company + user）
+-- 注意：密码字段为哈希值，明文密码未知。
 
-INSERT INTO company (name, address, contact_person, contact_phone, contact_email, created_at, updated_at) VALUES
-    ('测试航运有限公司', '上海市浦东新区张江高科技园区88号', '张三', '13800000001', 'admin@test-shipping.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO company (id, name, address, contact_person, contact_phone, contact_email, created_at, updated_at) VALUES
+    (1, 'Company Test', 'Shanghai', 'John Doe', '12345678', 'test@163.com', '2025-04-17 19:11:46', NULL);
 
-INSERT INTO user (username, hashed_password, phone, is_admin, is_system_admin, disabled, company_id, created_at, updated_at) VALUES
-    ('admin', '$2b$12$/GOtP3wHTASyRSGo/LtKuuAIn7KO64zx0WHtiTLxIAeSldXu1kHxi', '13900000001', 1, 1, 0,
-        (SELECT id FROM company WHERE name = '测试航运有限公司'),
-        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO user (id, username, hashed_password, phone, is_admin, is_system_admin, disabled, company_id, created_at, updated_at) VALUES
+    (1, 'user', '$2b$12$Dr2YLnyK4c9IkYptSKyw3OmQ5dHoLmpJ1YGTrs5.QJwbpl9LP0ZOm', '12345678', 0, 0, 0,
+        (SELECT id FROM company WHERE name = 'Company Test'),
+        '2025-04-17 12:35:56', NULL);

@@ -297,8 +297,8 @@ curl "http://localhost:8003/daily/vessel/1?limit=5"
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `DATABASE_URL` | `sqlite:///./data.db` | SQLite 连接串（上传记录） |
-| `DUCK_DB_PATH` | `./data.duckdb` | DuckDB 文件路径（遥测数据） |
+| `DATABASE_URL` | `sqlite:////Users/lee/services/data/data.db` | SQLite 连接串（上传记录） |
+| `DUCK_DB_PATH` | `/Users/lee/services/data/data.duckdb` | DuckDB 文件路径（遥测数据） |
 | `UPLOAD_DIR` | `uploads` | CSV 文件存储目录 |
 | `MAX_FILE_SIZE` | `104857600` | 最大上传文件大小（字节，默认 100MB） |
 | `LOG_LEVEL` | `INFO` | 日志级别 |

@@ -1,6 +1,6 @@
 # 船舶能效数据分析 — 微服务架构
 
-基于 uv workspace 的 monorepo，包含四个独立微服务 + 可观测性组件。
+基于 uv workspace 的 monorepo，包含五个独立微服务 + 可观测性组件。
 
 ---
 
@@ -25,7 +25,8 @@ services/
     ├── meta/                   # 元数据服务（port 8000）
     ├── identity/               # 身份认证服务（port 8001）
     ├── vessel/                 # 船舶管理服务（port 8002）
-    └── data/                   # 遥测数据服务（port 8003）
+    ├── data/                   # 遥测数据服务（port 8003）
+    └── analytics/              # 分析服务（port 8004）
 ```
 
 ---
@@ -38,6 +39,7 @@ services/
 | identity | 8001 | 公司管理 + 用户注册/登录/JWT | [apps/identity/README.md](apps/identity/README.md) |
 | vessel | 8002 | 船舶信息 + 设备 + 功率曲线 | [apps/vessel/README.md](apps/vessel/README.md) |
 | data | 8003 | CSV 上传 + 数据清洗 + DuckDB 存储 + CII 计算 | [apps/data/README.md](apps/data/README.md) |
+| analytics | 8004 | 统计分析 + CII 评级 + 优化建议 | [apps/analytics/README.md](apps/analytics/README.md) |
 
 ---
 
@@ -54,6 +56,7 @@ make run-meta       # http://localhost:8000/docs
 make run-identity   # http://localhost:8001/docs
 make run-vessel     # http://localhost:8002/docs
 make run-data       # http://localhost:8003/docs
+make run-analytics  # http://localhost:8004/docs
 ```
 
 首次启动会自动建表，部分服务执行 `seed.sql` 写入初始数据：
@@ -83,7 +86,7 @@ make test-data      # 单独运行 data 测试
 ```bash
 make kind-pull-obs   # 预拉取 grafana/loki/promtail 镜像（防止 Kind 内拉取超时）
 make kind-create     # 创建 Kind 集群（名称：iap）
-make kind-load       # 构建三个服务镜像并加载到 Kind
+make kind-load       # 构建并加载全部服务镜像到 Kind
 make kind-apply      # 部署所有 k8s 资源
 ```
 
@@ -94,10 +97,13 @@ make kind-apply      # 部署所有 k8s 资源
 | meta | 8000 |
 | identity | 8001 |
 | vessel | 8002 |
+| data | 9004 |
+| analytics | 9005 |
 | Grafana | 3000 |
-| Loki | 3100 |
+| Loki | 9100 |
+| Ingress HTTP | 9080 |
 
-> **注**：data 服务（port 8003）尚未加入 kind-load 和 k8s manifests，本地开发通过 `make run-data` 启动即可。
+> 说明：`9003` 已预留给业务应用，不再用于 Grafana。
 
 ### ⚠️ Docker Desktop 重启后端口失效问题
 
@@ -152,6 +158,7 @@ Grafana 访问：`http://localhost:3000`（默认无需登录）
 {service="identity"}
 {service="vessel"}
 {service="data"}
+{service="analytics"}
 ```
 
 ---

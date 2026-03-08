@@ -202,7 +202,7 @@ uv run uvicorn vessel.app:app --reload --port 8002
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `DATABASE_URL` | `sqlite:///vessel.db` | 数据库连接串 |
+| `DATABASE_URL` | `sqlite:////Users/lee/services/data/vessel.db` | 数据库连接串 |
 | `LOG_LEVEL` | `INFO` | 日志级别 |
 
 ---
