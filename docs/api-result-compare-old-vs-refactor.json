@@ -1,0 +1,583 @@
+[
+  {
+    "name": "GET /company",
+    "old_url": "http://localhost:8000/company",
+    "new_url": "http://localhost:9001/company",
+    "old_status": 200,
+    "new_status": 200,
+    "same_status": true,
+    "old_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "new_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "same_top": true,
+    "old_shape": {
+      "type": "list",
+      "len": 1,
+      "item_keys": [
+        "address",
+        "contact_email",
+        "contact_person",
+        "contact_phone",
+        "created_at",
+        "id",
+        "name"
+      ]
+    },
+    "new_shape": {
+      "type": "list",
+      "len": 1,
+      "item_keys": [
+        "address",
+        "contact_email",
+        "contact_person",
+        "contact_phone",
+        "id",
+        "name"
+      ]
+    },
+    "same_data_type": true,
+    "same_data_keys": false,
+    "compat_level": "中"
+  },
+  {
+    "name": "GET /company/1",
+    "old_url": "http://localhost:8000/company/1",
+    "new_url": "http://localhost:9001/company/1",
+    "old_status": 200,
+    "new_status": 200,
+    "same_status": true,
+    "old_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "new_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "same_top": true,
+    "old_shape": {
+      "type": "dict",
+      "keys": [
+        "address",
+        "contact_email",
+        "contact_person",
+        "contact_phone",
+        "created_at",
+        "id",
+        "name"
+      ]
+    },
+    "new_shape": {
+      "type": "dict",
+      "keys": [
+        "address",
+        "contact_email",
+        "contact_person",
+        "contact_phone",
+        "id",
+        "name"
+      ]
+    },
+    "same_data_type": true,
+    "same_data_keys": false,
+    "compat_level": "中"
+  },
+  {
+    "name": "GET /user?offset=0&limit=10",
+    "old_url": "http://localhost:8000/user?offset=0&limit=10",
+    "new_url": "http://localhost:9001/user?offset=0&limit=10",
+    "old_status": 200,
+    "new_status": 200,
+    "same_status": true,
+    "old_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "new_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "same_top": true,
+    "old_shape": {
+      "type": "list",
+      "len": 1,
+      "item_keys": [
+        "company_id",
+        "disabled",
+        "id",
+        "is_admin",
+        "is_system_admin",
+        "phone",
+        "username"
+      ]
+    },
+    "new_shape": {
+      "type": "list",
+      "len": 1,
+      "item_keys": [
+        "company_id",
+        "disabled",
+        "id",
+        "is_admin",
+        "is_system_admin",
+        "phone",
+        "username"
+      ]
+    },
+    "same_data_type": true,
+    "same_data_keys": true,
+    "compat_level": "高"
+  },
+  {
+    "name": "GET /user/1",
+    "old_url": "http://localhost:8000/user/1",
+    "new_url": "http://localhost:9001/user/1",
+    "old_status": 200,
+    "new_status": 200,
+    "same_status": true,
+    "old_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "new_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "same_top": true,
+    "old_shape": {
+      "type": "dict",
+      "keys": [
+        "company_id",
+        "disabled",
+        "id",
+        "is_admin",
+        "is_system_admin",
+        "phone",
+        "username"
+      ]
+    },
+    "new_shape": {
+      "type": "dict",
+      "keys": [
+        "company_id",
+        "disabled",
+        "id",
+        "is_admin",
+        "is_system_admin",
+        "phone",
+        "username"
+      ]
+    },
+    "same_data_type": true,
+    "same_data_keys": true,
+    "compat_level": "高"
+  },
+  {
+    "name": "GET /vessel?offset=0&limit=10",
+    "old_url": "http://localhost:8000/vessel?offset=0&limit=10",
+    "new_url": "http://localhost:9002/vessel?offset=0&limit=10",
+    "old_status": 200,
+    "new_status": 200,
+    "same_status": true,
+    "old_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "new_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "same_top": true,
+    "old_shape": {
+      "type": "list",
+      "len": 4,
+      "item_keys": [
+        "build_date",
+        "cii_rating",
+        "company_id",
+        "created_at",
+        "dead_weight",
+        "engine_overhaul_date",
+        "engine_state",
+        "equipment_fuel",
+        "gross_tone",
+        "hull_clean_date",
+        "hull_propeller_state",
+        "id",
+        "latest_cii",
+        "me_fuel_consumption_nmile",
+        "mmsi",
+        "name",
+        "new_vessel",
+        "newly_paint_date",
+        "pitch",
+        "power_speed_curve",
+        "propeller_polish_date",
+        "ship_type",
+        "speed_water",
+        "time_zone"
+      ]
+    },
+    "new_shape": {
+      "type": "list",
+      "len": 4,
+      "item_keys": [
+        "build_date",
+        "company_id",
+        "created_at",
+        "curves",
+        "dead_weight",
+        "engine_overhaul_date",
+        "equipments",
+        "gross_tone",
+        "hull_clean_date",
+        "id",
+        "mmsi",
+        "name",
+        "new_vessel",
+        "newly_paint_date",
+        "pitch",
+        "propeller_polish_date",
+        "ship_type",
+        "time_zone"
+      ]
+    },
+    "same_data_type": true,
+    "same_data_keys": false,
+    "compat_level": "中"
+  },
+  {
+    "name": "GET /vessel/1",
+    "old_url": "http://localhost:8000/vessel/1",
+    "new_url": "http://localhost:9002/vessel/1",
+    "old_status": 200,
+    "new_status": 200,
+    "same_status": true,
+    "old_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "new_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "same_top": true,
+    "old_shape": {
+      "type": "dict",
+      "keys": [
+        "build_date",
+        "cii_rating",
+        "company_id",
+        "created_at",
+        "dead_weight",
+        "engine_overhaul_date",
+        "engine_state",
+        "equipment_fuel",
+        "gross_tone",
+        "hull_clean_date",
+        "hull_propeller_state",
+        "id",
+        "latest_cii",
+        "me_fuel_consumption_nmile",
+        "mmsi",
+        "name",
+        "new_vessel",
+        "newly_paint_date",
+        "pitch",
+        "power_speed_curve",
+        "propeller_polish_date",
+        "ship_type",
+        "speed_water",
+        "time_zone"
+      ]
+    },
+    "new_shape": {
+      "type": "dict",
+      "keys": [
+        "build_date",
+        "company_id",
+        "created_at",
+        "curves",
+        "dead_weight",
+        "engine_overhaul_date",
+        "equipments",
+        "gross_tone",
+        "hull_clean_date",
+        "id",
+        "mmsi",
+        "name",
+        "new_vessel",
+        "newly_paint_date",
+        "pitch",
+        "propeller_polish_date",
+        "ship_type",
+        "time_zone"
+      ]
+    },
+    "same_data_type": true,
+    "same_data_keys": false,
+    "compat_level": "中"
+  },
+  {
+    "name": "GET /meta/fuel_type",
+    "old_url": "http://localhost:8000/meta/fuel_type",
+    "new_url": "http://localhost:9000/meta/fuel_type",
+    "old_status": 200,
+    "new_status": 200,
+    "same_status": true,
+    "old_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "new_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "same_top": true,
+    "old_shape": {
+      "type": "list",
+      "len": 16,
+      "item_keys": [
+        "cf",
+        "id",
+        "name_abbr",
+        "name_cn",
+        "name_en"
+      ]
+    },
+    "new_shape": {
+      "type": "list",
+      "len": 16,
+      "item_keys": [
+        "cf",
+        "id",
+        "name_abbr",
+        "name_cn",
+        "name_en"
+      ]
+    },
+    "same_data_type": true,
+    "same_data_keys": true,
+    "compat_level": "高"
+  },
+  {
+    "name": "GET /meta/ship_type",
+    "old_url": "http://localhost:8000/meta/ship_type",
+    "new_url": "http://localhost:9000/meta/ship_type",
+    "old_status": 200,
+    "new_status": 200,
+    "same_status": true,
+    "old_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "new_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "same_top": true,
+    "old_shape": {
+      "type": "list",
+      "len": 13,
+      "item_keys": [
+        "cii_related_tone",
+        "code",
+        "id",
+        "name_cn",
+        "name_en"
+      ]
+    },
+    "new_shape": {
+      "type": "list",
+      "len": 13,
+      "item_keys": [
+        "cii_related_tone",
+        "code",
+        "id",
+        "name_cn",
+        "name_en"
+      ]
+    },
+    "same_data_type": true,
+    "same_data_keys": true,
+    "compat_level": "高"
+  },
+  {
+    "name": "GET /meta/time_zone",
+    "old_url": "http://localhost:8000/meta/time_zone",
+    "new_url": "http://localhost:9000/meta/time_zone",
+    "old_status": 200,
+    "new_status": 200,
+    "same_status": true,
+    "old_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "new_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "same_top": true,
+    "old_shape": {
+      "type": "list",
+      "len": 25,
+      "item_keys": [
+        "explaination",
+        "id",
+        "name_cn",
+        "name_en"
+      ]
+    },
+    "new_shape": {
+      "type": "list",
+      "len": 25,
+      "item_keys": [
+        "explaination",
+        "id",
+        "name_cn",
+        "name_en"
+      ]
+    },
+    "same_data_type": true,
+    "same_data_keys": true,
+    "compat_level": "高"
+  },
+  {
+    "name": "GET /meta/attributes",
+    "old_url": "http://localhost:8000/meta/attributes",
+    "new_url": "http://localhost:9000/meta/attributes",
+    "old_status": 200,
+    "new_status": 200,
+    "same_status": true,
+    "old_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "new_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "same_top": true,
+    "old_shape": {
+      "type": "list",
+      "len": 11,
+      "item_keys": [
+        "attribute",
+        "description"
+      ]
+    },
+    "new_shape": {
+      "type": "list",
+      "len": 11,
+      "item_keys": [
+        "attribute",
+        "description"
+      ]
+    },
+    "same_data_type": true,
+    "same_data_keys": true,
+    "compat_level": "高"
+  },
+  {
+    "name": "GET /meta/attribute_mapping",
+    "old_url": "http://localhost:8000/meta/attribute_mapping",
+    "new_url": "http://localhost:9000/meta/attribute_mapping",
+    "old_status": 200,
+    "new_status": 200,
+    "same_status": true,
+    "old_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "new_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "same_top": true,
+    "old_shape": {
+      "type": "list",
+      "len": 5,
+      "item_keys": [
+        "attribute_left",
+        "attribute_right"
+      ]
+    },
+    "new_shape": {
+      "type": "list",
+      "len": 5,
+      "item_keys": [
+        "attribute_left",
+        "attribute_right"
+      ]
+    },
+    "same_data_type": true,
+    "same_data_keys": true,
+    "compat_level": "高"
+  },
+  {
+    "name": "GET /upload/vessel/1/history",
+    "old_url": "http://localhost:8000/upload/vessel/1/history",
+    "new_url": "http://localhost:9004/upload/vessel/1/history",
+    "old_status": 200,
+    "new_status": 200,
+    "same_status": true,
+    "old_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "new_top": [
+      "code",
+      "data",
+      "message"
+    ],
+    "same_top": true,
+    "old_shape": {
+      "type": "list",
+      "len": 10,
+      "item_keys": [
+        "created_at",
+        "date_end",
+        "date_start",
+        "file_path",
+        "id",
+        "vessel_id"
+      ]
+    },
+    "new_shape": {
+      "type": "list",
+      "len": 0,
+      "item_keys": []
+    },
+    "same_data_type": true,
+    "same_data_keys": false,
+    "compat_level": "中"
+  }
+]

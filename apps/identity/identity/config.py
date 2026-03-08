@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     debug: bool = False
     host: str = "0.0.0.0"
     port: int = 8001
+    vessel_service_url: str = "http://localhost:9002"
 
     jwt_secret_key: str = "change-me-in-production"
     jwt_algorithm: str = "HS256"

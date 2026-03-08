@@ -1,5 +1,7 @@
 """Pydantic request/response schemas for the identity service."""
 
+from datetime import datetime
+
 from pydantic import BaseModel
 
 # --- Company ---
@@ -12,6 +14,7 @@ class CompanySchema(BaseModel):
     contact_person: str
     contact_phone: str
     contact_email: str
+    created_at: datetime
 
     model_config = {
         "from_attributes": True,
@@ -24,6 +27,7 @@ class CompanySchema(BaseModel):
                     "contact_person": "张三",
                     "contact_phone": "13800000001",
                     "contact_email": "contact@shipping.com",
+                    "created_at": "2025-01-01T00:00:00",
                 }
             ]
         },

@@ -1,6 +1,9 @@
 """Business logic for the identity service."""
 
+import json
 from datetime import timedelta
+from urllib.parse import urlencode
+from urllib.request import urlopen
 
 from common.auth import create_access_token, get_password_hash, verify_password
 from common.exceptions import AuthenticationError, EntityNotFoundError
@@ -48,6 +51,19 @@ class CompanyService:
         self.repo.delete(company)
 
         return company
+
+    def get_company_vessels(self, company_id: int) -> list[dict]:
+        # Keep old API compatibility by delegating vessel lookup to vessel service.
+        self.get_company_by_id(company_id)
+        query = urlencode({"company_id": company_id, "offset": 0, "limit": 1000})
+        url = f"{settings.vessel_service_url}/vessel?{query}"
+        try:
+            with urlopen(url, timeout=5) as response:
+                body = json.loads(response.read().decode("utf-8"))
+                data = body.get("data", [])
+                return data if isinstance(data, list) else []
+        except Exception:
+            return []
 
 
 class UserService:

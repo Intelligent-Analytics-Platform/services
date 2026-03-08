@@ -66,6 +66,19 @@ def get_company(
     return ResponseModel(data=CompanySchema.model_validate(company), message="获取公司信息成功")
 
 
+@company_router.get(
+    "/{company_id}/vessels",
+    summary="获取公司旗下船舶",
+    description="兼容旧接口：按公司 ID 返回该公司的船舶列表。",
+)
+def get_company_vessels(
+    company_id: int,
+    service: CompanyService = Depends(get_company_service),
+) -> ResponseModel[list[dict]]:
+    vessels = service.get_company_vessels(company_id)
+    return ResponseModel(data=vessels, message="获取公司船舶列表成功")
+
+
 @company_router.put(
     "/{company_id}",
     summary="更新公司信息",

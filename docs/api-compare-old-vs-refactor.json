@@ -1,0 +1,1260 @@
+{
+  "old_total": 50,
+  "new_total": 41,
+  "shared": 36,
+  "only_old": [
+    {
+      "method": "GET",
+      "path": "/company/{company_id}/vessels"
+    },
+    {
+      "method": "GET",
+      "path": "/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/optimization/{vessel_id}/average"
+    },
+    {
+      "method": "GET",
+      "path": "/optimization/{vessel_id}/consumption-total"
+    },
+    {
+      "method": "GET",
+      "path": "/optimization/{vessel_id}/values"
+    },
+    {
+      "method": "GET",
+      "path": "/reminder/{vessel_id}/engine"
+    },
+    {
+      "method": "GET",
+      "path": "/reminder/{vessel_id}/graph"
+    },
+    {
+      "method": "GET",
+      "path": "/reminder/{vessel_id}/monthly-power-ranges-sfoc"
+    },
+    {
+      "method": "GET",
+      "path": "/reminder/{vessel_id}/values"
+    },
+    {
+      "method": "POST",
+      "path": "/calculate/cii"
+    },
+    {
+      "method": "POST",
+      "path": "/route-optimization/get-shortest-route"
+    },
+    {
+      "method": "POST",
+      "path": "/route-optimization/historical-routes"
+    },
+    {
+      "method": "POST",
+      "path": "/route-optimization/plan-all"
+    },
+    {
+      "method": "POST",
+      "path": "/route-optimization/ship-route-planner"
+    }
+  ],
+  "only_new": [
+    {
+      "method": "GET",
+      "path": "/daily/vessel/{vessel_id}",
+      "service": "data"
+    },
+    {
+      "method": "GET",
+      "path": "/optimization/vessel/{vessel_id}/average",
+      "service": "analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/optimization/vessel/{vessel_id}/consumption-total",
+      "service": "analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/optimization/vessel/{vessel_id}/values",
+      "service": "analytics"
+    },
+    {
+      "method": "GET",
+      "path": "/upload/{upload_id}/status",
+      "service": "data"
+    }
+  ],
+  "changed": [
+    {
+      "method": "GET",
+      "path": "/",
+      "service": "analytics",
+      "diffs": [
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "Root",
+        "operationId": "root__get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200"
+        ]
+      },
+      "new": {
+        "service": "analytics",
+        "summary": "Health Check",
+        "operationId": "health_check__get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/company",
+      "service": "identity",
+      "diffs": [
+        "responses"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取所有公司",
+        "operationId": "get_companies_company_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "identity",
+        "summary": "获取所有公司",
+        "operationId": "get_companies_company_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/meta/attribute_mapping",
+      "service": "meta",
+      "diffs": [
+        "responses"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "属性组合",
+        "operationId": "get_attribute_mapping_meta_attribute_mapping_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "meta",
+        "summary": "属性组合",
+        "operationId": "get_attribute_mapping_meta_attribute_mapping_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/meta/attributes",
+      "service": "meta",
+      "diffs": [
+        "responses"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "属性",
+        "operationId": "get_attributes_meta_attributes_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "meta",
+        "summary": "属性",
+        "operationId": "get_attributes_meta_attributes_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/meta/fuel_type",
+      "service": "meta",
+      "diffs": [
+        "responses"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取燃料类型",
+        "operationId": "get_fuel_types_meta_fuel_type_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "meta",
+        "summary": "获取燃料类型",
+        "operationId": "get_fuel_types_meta_fuel_type_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/meta/fuel_type_category",
+      "service": "meta",
+      "diffs": [
+        "responses"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "燃料类型分类",
+        "operationId": "get_fuel_type_category_meta_fuel_type_category_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "meta",
+        "summary": "燃料类型分类",
+        "operationId": "get_fuel_type_category_meta_fuel_type_category_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/meta/ship_type",
+      "service": "meta",
+      "diffs": [
+        "responses"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取船舶类型",
+        "operationId": "get_ship_types_meta_ship_type_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "meta",
+        "summary": "获取船舶类型",
+        "operationId": "get_ship_types_meta_ship_type_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/meta/time_zone",
+      "service": "meta",
+      "diffs": [
+        "responses"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取时区",
+        "operationId": "get_time_zones_meta_time_zone_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "meta",
+        "summary": "获取时区",
+        "operationId": "get_time_zones_meta_time_zone_get",
+        "params": [],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/optimization/optimize-speed/{vessel_id}",
+      "service": "analytics",
+      "diffs": [
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "Get speed optimization suggestions",
+        "operationId": "optimize_speed_optimization_optimize_speed__vessel_id__get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "analytics",
+        "summary": "获取航速优化建议（需ML模型）",
+        "operationId": "optimize_speed_optimization_optimize_speed__vessel_id__get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/optimization/optimize-trim/{vessel_id}",
+      "service": "analytics",
+      "diffs": [
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "Get trim optimization suggestions",
+        "operationId": "optimize_trim_optimization_optimize_trim__vessel_id__get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "analytics",
+        "summary": "获取吃水差优化建议（需ML模型）",
+        "operationId": "optimize_trim_optimization_optimize_trim__vessel_id__get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/optimization/trim-data/{vessel_id}",
+      "service": "analytics",
+      "diffs": [
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "Get vessel trim data",
+        "operationId": "get_trim_data_optimization_trim_data__vessel_id__get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "analytics",
+        "summary": "获取船舶吃水差数据",
+        "operationId": "get_trim_data_optimization_trim_data__vessel_id__get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/statistic/attribute-frequencies",
+      "service": "analytics",
+      "diffs": [
+        "parameters",
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取属性频次分布",
+        "operationId": "get_attribute_frequencies_statistic_attribute_frequencies_get",
+        "params": [
+          [
+            "query",
+            "attribute_name",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "max_slip_ratio",
+            true
+          ],
+          [
+            "query",
+            "min_slip_ratio",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ],
+          [
+            "query",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "analytics",
+        "summary": "获取直方图属性值频次",
+        "operationId": "get_attribute_frequencies_statistic_attribute_frequencies_get",
+        "params": [
+          [
+            "query",
+            "attribute_name",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "max_slip_ratio",
+            false
+          ],
+          [
+            "query",
+            "min_slip_ratio",
+            false
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ],
+          [
+            "query",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/statistic/attribute-relation",
+      "service": "analytics",
+      "diffs": [
+        "parameters",
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取属性关系",
+        "operationId": "get_attribute_relation_statistic_attribute_relation_get",
+        "params": [
+          [
+            "query",
+            "attribute_name1",
+            true
+          ],
+          [
+            "query",
+            "attribute_name2",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "max_slip_ratio",
+            true
+          ],
+          [
+            "query",
+            "min_slip_ratio",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ],
+          [
+            "query",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "analytics",
+        "summary": "获取属性关系图数据（双属性散点图）",
+        "operationId": "get_attribute_relation_statistic_attribute_relation_get",
+        "params": [
+          [
+            "query",
+            "attribute_name1",
+            true
+          ],
+          [
+            "query",
+            "attribute_name2",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "max_slip_ratio",
+            false
+          ],
+          [
+            "query",
+            "min_slip_ratio",
+            false
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ],
+          [
+            "query",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/statistic/attribute-values",
+      "service": "analytics",
+      "diffs": [
+        "parameters",
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取属性值随日期变化",
+        "operationId": "get_attribute_values_statistic_attribute_values_get",
+        "params": [
+          [
+            "query",
+            "attribute_name",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "max_slip_ratio",
+            true
+          ],
+          [
+            "query",
+            "min_slip_ratio",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ],
+          [
+            "query",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "analytics",
+        "summary": "获取散点图属性值（日期维度）",
+        "operationId": "get_attribute_values_statistic_attribute_values_get",
+        "params": [
+          [
+            "query",
+            "attribute_name",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "max_slip_ratio",
+            false
+          ],
+          [
+            "query",
+            "min_slip_ratio",
+            false
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ],
+          [
+            "query",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/statistic/consumption/nmile",
+      "service": "analytics",
+      "diffs": [
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取每海里油耗统计",
+        "operationId": "get_consumption_nmile_statistic_consumption_nmile_get",
+        "params": [
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "fuel_type",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ],
+          [
+            "query",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "analytics",
+        "summary": "获取每海里燃油消耗统计",
+        "operationId": "get_consumption_statistic_nmile_statistic_consumption_nmile_get",
+        "params": [
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "fuel_type",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ],
+          [
+            "query",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/statistic/consumption/total",
+      "service": "analytics",
+      "diffs": [
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取总油耗统计",
+        "operationId": "get_consumption_total_statistic_consumption_total_get",
+        "params": [
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "fuel_type",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ],
+          [
+            "query",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "analytics",
+        "summary": "获取总燃油消耗统计",
+        "operationId": "get_consumption_statistic_total_statistic_consumption_total_get",
+        "params": [
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "fuel_type",
+            true
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ],
+          [
+            "query",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/statistic/vessel/{vessel_id}/cii",
+      "service": "analytics",
+      "diffs": [
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取船舶CII数据",
+        "operationId": "get_vessel_cii_statistic_vessel__vessel_id__cii_get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "analytics",
+        "summary": "获取船舶CII数据（含评级）",
+        "operationId": "get_vessel_cii_statistic_vessel__vessel_id__cii_get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/statistic/vessel/{vessel_id}/date-range",
+      "service": "analytics",
+      "diffs": [
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取时间范围内船舶数据",
+        "operationId": "get_vessel_data_by_date_range_statistic_vessel__vessel_id__date_range_get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "sample_interval",
+            false
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "analytics",
+        "summary": "获取时间范围内船舶标准数据",
+        "operationId": "get_vessel_data_info_by_date_range_statistic_vessel__vessel_id__date_range_get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ],
+          [
+            "query",
+            "end_date",
+            true
+          ],
+          [
+            "query",
+            "sample_interval",
+            false
+          ],
+          [
+            "query",
+            "start_date",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/upload/vessel/{vessel_id}/history",
+      "service": "data",
+      "diffs": [
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取船舶数据上传历史",
+        "operationId": "get_vessel_data_upload_history_upload_vessel__vessel_id__history_get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ],
+          [
+            "query",
+            "limit",
+            false
+          ],
+          [
+            "query",
+            "offset",
+            false
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "data",
+        "summary": "获取船舶上传历史",
+        "operationId": "get_upload_history_upload_vessel__vessel_id__history_get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ],
+          [
+            "query",
+            "limit",
+            false
+          ],
+          [
+            "query",
+            "offset",
+            false
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/vessel/{vessel_id}",
+      "service": "vessel",
+      "diffs": [
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "获取单个船舶",
+        "operationId": "get_vessel_vessel__vessel_id__get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "vessel",
+        "summary": "获取船舶详情",
+        "operationId": "get_vessel_vessel__vessel_id__get",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": false,
+        "req_content_types": [],
+        "responses": [
+          "200",
+          "422"
+        ]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/upload/vessel/{vessel_id}/standard",
+      "service": "data",
+      "diffs": [
+        "parameters",
+        "responses",
+        "summary"
+      ],
+      "old": {
+        "service": "old",
+        "summary": "上传标准数据",
+        "operationId": "upload_standard_csv_upload_vessel__vessel_id__standard_post",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ]
+        ],
+        "req_required": true,
+        "req_content_types": [
+          "multipart/form-data"
+        ],
+        "responses": [
+          "200",
+          "422"
+        ]
+      },
+      "new": {
+        "service": "data",
+        "summary": "上传标准 CSV 数据",
+        "operationId": "upload_standard_csv_upload_vessel__vessel_id__standard_post",
+        "params": [
+          [
+            "path",
+            "vessel_id",
+            true
+          ],
+          [
+            "query",
+            "pitch",
+            false
+          ],
+          [
+            "query",
+            "vessel_capacity",
+            false
+          ]
+        ],
+        "req_required": true,
+        "req_content_types": [
+          "multipart/form-data"
+        ],
+        "responses": [
+          "202",
+          "422"
+        ]
+      }
+    }
+  ]
+}
