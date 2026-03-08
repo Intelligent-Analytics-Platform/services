@@ -1,51 +1,68 @@
--- 测试种子数据（仅用于开发环境）
--- 依赖：
---   company_id=1  来自 identity/seed.sql（测试航运有限公司）
---   ship_type=4   来自 meta/seed.sql（集装箱船 I004）
---   time_zone=9   来自 meta/seed.sql（东八区 UTC+8）
---   fuel_type_id  来自 meta/seed.sql（1=HFO-HS, 7=MDO/MGO, 11=LNG）
+-- 从本地 MySQL db 库同步的种子数据（vessel域）
+-- 说明：curve_data 中 power_speed_curve_id 为空的记录不符合当前模型约束，已过滤。
 
--- 测试船舶：集装箱轮
-INSERT INTO vessel (
-    name, mmsi, build_date, gross_tone, dead_weight,
-    new_vessel, pitch,
-    hull_clean_date, engine_overhaul_date, newly_paint_date, propeller_polish_date,
-    company_id, ship_type, time_zone,
-    created_at, updated_at
-) VALUES (
-    '测试集装箱轮', '413123456', '2018-03-15', 50000.0, 65000.0,
-    0, 6.058,
-    '2024-06-01', '2023-12-01', '2024-06-01', NULL,
-    1, 4, 9,
-    CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-);
-
--- 设备：主机（me）
-INSERT INTO equipment (name, type, vessel_id) VALUES
-    ('主机', 'me', (SELECT id FROM vessel WHERE mmsi = '413123456'));
-
--- 主机燃料：LNG + HFO-HS（双燃料）
-INSERT INTO equipment_fuel (equipment_id, fuel_type_id) VALUES
-    ((SELECT id FROM equipment WHERE name = '主机' AND vessel_id = (SELECT id FROM vessel WHERE mmsi = '413123456')), 11),
-    ((SELECT id FROM equipment WHERE name = '主机' AND vessel_id = (SELECT id FROM vessel WHERE mmsi = '413123456')), 1);
-
--- 设备：发电机（dg）
-INSERT INTO equipment (name, type, vessel_id) VALUES
-    ('辅机', 'dg', (SELECT id FROM vessel WHERE mmsi = '413123456'));
-
--- 辅机燃料：MDO/MGO
-INSERT INTO equipment_fuel (equipment_id, fuel_type_id) VALUES
-    ((SELECT id FROM equipment WHERE name = '辅机' AND vessel_id = (SELECT id FROM vessel WHERE mmsi = '413123456')), 7);
-
--- 功率-航速曲线（正常压载吃水）
-INSERT INTO power_speed_curve (curve_name, draft_astern, draft_bow, vessel_id) VALUES
-    ('设计曲线（压载）', 8.5, 7.2, (SELECT id FROM vessel WHERE mmsi = '413123456'));
-
--- 曲线数据点（速度 kn → 主机功率 kW）
-INSERT INTO curve_data (speed_water, me_power, power_speed_curve_id) VALUES
-    (10.0,  8200.0,  (SELECT id FROM power_speed_curve WHERE vessel_id = (SELECT id FROM vessel WHERE mmsi = '413123456'))),
-    (12.0, 14100.0,  (SELECT id FROM power_speed_curve WHERE vessel_id = (SELECT id FROM vessel WHERE mmsi = '413123456'))),
-    (14.0, 22500.0,  (SELECT id FROM power_speed_curve WHERE vessel_id = (SELECT id FROM vessel WHERE mmsi = '413123456'))),
-    (16.0, 34800.0,  (SELECT id FROM power_speed_curve WHERE vessel_id = (SELECT id FROM vessel WHERE mmsi = '413123456'))),
-    (18.0, 51200.0,  (SELECT id FROM power_speed_curve WHERE vessel_id = (SELECT id FROM vessel WHERE mmsi = '413123456'))),
-    (20.0, 72000.0,  (SELECT id FROM power_speed_curve WHERE vessel_id = (SELECT id FROM vessel WHERE mmsi = '413123456')));
+INSERT INTO vessel (id,name,mmsi,build_date,gross_tone,dead_weight,new_vessel,pitch,hull_clean_date,engine_overhaul_date,newly_paint_date,propeller_polish_date,company_id,ship_type,time_zone,created_at,updated_at) VALUES (1,'八打雁','477401901','2019-11-01',26771,35337,0,6.134,'2024-10-15','2024-10-15','2022-07-01','2024-10-15',1,4,1,'2025-04-17 19:11:46',NULL);
+INSERT INTO vessel (id,name,mmsi,build_date,gross_tone,dead_weight,new_vessel,pitch,hull_clean_date,engine_overhaul_date,newly_paint_date,propeller_polish_date,company_id,ship_type,time_zone,created_at,updated_at) VALUES (2,'明勤','477745200','2022-01-01',38988,61637,0,6.058,'2024-10-15','2024-10-15','2022-07-01','2024-10-15',1,5,1,'2025-04-20 17:06:06',NULL);
+INSERT INTO vessel (id,name,mmsi,build_date,gross_tone,dead_weight,new_vessel,pitch,hull_clean_date,engine_overhaul_date,newly_paint_date,propeller_polish_date,company_id,ship_type,time_zone,created_at,updated_at) VALUES (7,'八打雁2','4774019012','2019-11-01',26771,35337,0,6,'2021-01-01','2021-01-01','2021-01-01','2021-01-01',1,4,1,'2025-06-15 12:00:29',NULL);
+INSERT INTO vessel (id,name,mmsi,build_date,gross_tone,dead_weight,new_vessel,pitch,hull_clean_date,engine_overhaul_date,newly_paint_date,propeller_polish_date,company_id,ship_type,time_zone,created_at,updated_at) VALUES (15,'123','214','2025-12-11',45,42,0,6.058,NULL,NULL,NULL,NULL,1,2,8,'2025-12-12 00:49:04',NULL);
+INSERT INTO equipment (id,name,type,vessel_id) VALUES (1,'主机1','me',1);
+INSERT INTO equipment (id,name,type,vessel_id) VALUES (2,'辅机1','dg',1);
+INSERT INTO equipment (id,name,type,vessel_id) VALUES (3,'锅炉1','blr',1);
+INSERT INTO equipment (id,name,type,vessel_id) VALUES (4,'主机1','me',2);
+INSERT INTO equipment (id,name,type,vessel_id) VALUES (5,'辅机1','dg',2);
+INSERT INTO equipment (id,name,type,vessel_id) VALUES (6,'锅炉1','blr',2);
+INSERT INTO equipment (id,name,type,vessel_id) VALUES (11,'主机','me',7);
+INSERT INTO equipment (id,name,type,vessel_id) VALUES (12,'副机','dg',7);
+INSERT INTO equipment (id,name,type,vessel_id) VALUES (13,'锅炉','blr',7);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (1,1);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (2,1);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (2,7);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (3,1);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (3,7);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (4,1);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (5,1);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (6,1);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (11,1);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (12,1);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (12,7);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (13,1);
+INSERT INTO equipment_fuel (equipment_id,fuel_type_id) VALUES (13,7);
+INSERT INTO power_speed_curve (id,curve_name,draft_astern,draft_bow,vessel_id) VALUES (1,'trial',7.9,5.9,1);
+INSERT INTO power_speed_curve (id,curve_name,draft_astern,draft_bow,vessel_id) VALUES (2,'contract',11.5,11.5,1);
+INSERT INTO power_speed_curve (id,curve_name,draft_astern,draft_bow,vessel_id) VALUES (3,'trial',7.9,4.9,2);
+INSERT INTO power_speed_curve (id,curve_name,draft_astern,draft_bow,vessel_id) VALUES (4,'contract',11.3,11.3,2);
+INSERT INTO power_speed_curve (id,curve_name,draft_astern,draft_bow,vessel_id) VALUES (9,'主机',10,10,7);
+INSERT INTO power_speed_curve (id,curve_name,draft_astern,draft_bow,vessel_id) VALUES (10,'副机',10,10,7);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (1,11.2,3000,1);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (2,12.4,4000,1);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (3,13.4,5000,1);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (4,14.2,6000,1);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (5,14.82,7000,1);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (6,15.34,8000,1);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (7,13.7,3000,2);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (8,15,4000,2);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (9,16,5000,2);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (10,16.85,6000,2);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (11,17.7,7000,2);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (12,18.4,8000,2);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (13,19.1,9000,2);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (14,19.65,10000,2);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (15,19.8,11000,2);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (16,13.7,3000,3);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (17,15,4000,3);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (18,16,5000,3);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (19,16.85,6000,3);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (20,17.7,7000,3);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (21,18.4,8000,3);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (22,19.1,9000,3);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (23,19.65,10000,3);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (24,11.2,3000,4);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (25,12.4,4000,4);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (26,13.4,5000,4);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (27,14.2,6000,4);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (28,14.82,7000,4);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (29,15.34,8000,4);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (35,10,1000,9);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (36,20,2000,9);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (37,30,3000,9);
+INSERT INTO curve_data (id,speed_water,me_power,power_speed_curve_id) VALUES (38,10,1000,10);
