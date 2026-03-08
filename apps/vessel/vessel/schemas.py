@@ -271,8 +271,19 @@ class VesselSchema(BaseModel):
     time_zone: int
     company_id: int
     created_at: datetime
+    # New response fields
     equipments: list[EquipmentSchema]
     curves: list[PowerSpeedCurveSchema]
+
+    # Old response compatibility fields
+    equipment_fuel: list[EquipmentSchema]
+    power_speed_curve: list[PowerSpeedCurveSchema]
+    speed_water: float = 0.0
+    me_fuel_consumption_nmile: float = 0.0
+    latest_cii: float = 0.0
+    cii_rating: str = "N/A"
+    engine_state: str = "Good"
+    hull_propeller_state: str = "Anomaly"
 
     model_config = {
         "from_attributes": True,

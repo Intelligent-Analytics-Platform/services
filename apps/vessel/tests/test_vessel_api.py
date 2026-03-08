@@ -21,8 +21,21 @@ class TestGetVessels:
         vessel = resp.json()["data"][0]
         assert "equipments" in vessel
         assert "curves" in vessel
+        # old response aliases
+        assert "equipment_fuel" in vessel
+        assert "power_speed_curve" in vessel
         assert len(vessel["equipments"]) == 2
         assert len(vessel["curves"]) == 1
+
+    def test_vessel_legacy_metrics_fields(self, client):
+        resp = client.get("/vessel")
+        vessel = resp.json()["data"][0]
+        assert "speed_water" in vessel
+        assert "me_fuel_consumption_nmile" in vessel
+        assert "latest_cii" in vessel
+        assert "cii_rating" in vessel
+        assert vessel["engine_state"] == "Good"
+        assert vessel["hull_propeller_state"] == "Anomaly"
 
     def test_equipment_fuel_ids(self, client):
         resp = client.get("/vessel")
@@ -122,6 +135,8 @@ class TestGetVessel:
         data = resp.json()["data"]
         assert data["id"] == 1
         assert data["mmsi"] == "123456789"
+        assert "equipment_fuel" in data
+        assert "power_speed_curve" in data
 
     def test_not_found(self, client):
         resp = client.get("/vessel/999")
