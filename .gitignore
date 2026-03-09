@@ -9,3 +9,6 @@ dist/
 .ruff_cache/
 upload/
 .secrets/
+.run/fastapi-8080.pid
+.gitignore
+logs/fastapi-8080.log

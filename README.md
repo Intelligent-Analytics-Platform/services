@@ -75,6 +75,36 @@ make test-vessel    # 单独运行 vessel 测试
 make test-data      # 单独运行 data 测试
 ```
 
+### 8080 自动守护与重启
+
+`8080` 不属于当前 k8s NodePort 暴露端口（当前业务端口是 `9000/9001/9002/9004/9005`）。
+如果你本地有一个 FastAPI 需要固定跑在 `8080`，可以用仓库脚本持续守护：
+
+脚本路径：`scripts/auto_restart_fastapi_8080.sh`
+
+```bash
+# 一次性检查：不健康则自动拉起
+START_CMD='cd /Users/lee/services/apps/meta && uv run uvicorn meta.app:app --host 0.0.0.0 --port 8080' \
+./scripts/auto_restart_fastapi_8080.sh --once
+
+# 持续守护：每 10 秒巡检一次，不健康自动重启
+START_CMD='cd /Users/lee/services/apps/meta && uv run uvicorn meta.app:app --host 0.0.0.0 --port 8080' \
+./scripts/auto_restart_fastapi_8080.sh --watch --interval 10
+```
+
+常用参数（可选环境变量）：
+- `PORT`：默认 `8080`
+- `HEALTH_URL`：默认 `http://127.0.0.1:$PORT/docs`
+- `START_TIMEOUT`：启动后健康检查等待秒数，默认 `30`
+- `LOG_FILE`：默认 `logs/fastapi-8080.log`
+- `PID_FILE`：默认 `.run/fastapi-8080.pid`
+
+停止守护：
+
+```bash
+pkill -f auto_restart_fastapi_8080.sh
+```
+
 ---
 
 ## k8s 部署（Kind 本地集群）
