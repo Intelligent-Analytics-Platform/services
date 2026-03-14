@@ -18,6 +18,13 @@
 - 仅重构后存在: **5**
 - 匹配但签名有差异: **21**
 
+## 代码审阅修正（2026-03-14）
+
+- 本文顶部统计来自 2026-03-08 的自动对比快照，不等同于当前代码现状。
+- `GET /company/{company_id}/vessels` 已在 `identity` 服务补齐兼容端点，旧报告中标记为 `仅老服务` 已过期。
+- `GET /optimization/{vessel_id}/values|average|consumption-total` 不是能力缺失，而是路径规范化到了 `analytics` 服务的 `/optimization/vessel/{vessel_id}/*`。
+- 因此阅读本报告时，需要把“严格 path+method 对比”和“能力是否已迁移”分开判断。
+
 ## 一一对比（按老服务接口）
 
 | 老接口 | 重构后状态 | 归属服务 | 备注 |
@@ -28,7 +35,7 @@
 | `GET /` | 有差异 | `analytics` | summary |
 | `GET /company` | 有差异 | `identity` | responses |
 | `GET /company/{company_id}` | 一致 | `identity` |  |
-| `GET /company/{company_id}/vessels` | 仅老服务 | - | 待迁移/已废弃 |
+| `GET /company/{company_id}/vessels` | 一致 | `identity` | 已在 identity 保留兼容端点 |
 | `GET /meta/attribute_mapping` | 有差异 | `meta` | responses |
 | `GET /meta/attributes` | 有差异 | `meta` | responses |
 | `GET /meta/fuel_type` | 有差异 | `meta` | responses |
@@ -39,9 +46,9 @@
 | `GET /optimization/optimize-speed/{vessel_id}` | 有差异 | `analytics` | summary |
 | `GET /optimization/optimize-trim/{vessel_id}` | 有差异 | `analytics` | summary |
 | `GET /optimization/trim-data/{vessel_id}` | 有差异 | `analytics` | summary |
-| `GET /optimization/{vessel_id}/average` | 仅老服务 | - | 待迁移/已废弃 |
-| `GET /optimization/{vessel_id}/consumption-total` | 仅老服务 | - | 待迁移/已废弃 |
-| `GET /optimization/{vessel_id}/values` | 仅老服务 | - | 待迁移/已废弃 |
+| `GET /optimization/{vessel_id}/average` | 路径重构 | `analytics` | 新路径：`GET /optimization/vessel/{vessel_id}/average` |
+| `GET /optimization/{vessel_id}/consumption-total` | 路径重构 | `analytics` | 新路径：`GET /optimization/vessel/{vessel_id}/consumption-total` |
+| `GET /optimization/{vessel_id}/values` | 路径重构 | `analytics` | 新路径：`GET /optimization/vessel/{vessel_id}/values` |
 | `GET /reminder/{vessel_id}/engine` | 仅老服务 | - | 待迁移/已废弃 |
 | `GET /reminder/{vessel_id}/graph` | 仅老服务 | - | 待迁移/已废弃 |
 | `GET /reminder/{vessel_id}/monthly-power-ranges-sfoc` | 仅老服务 | - | 待迁移/已废弃 |
@@ -327,22 +334,21 @@
 - 老 responses: `['200', '422']`
 - 新 responses: `['202', '422']`
 
-## 仅老服务存在（重构后缺失）
+## 旧路径仍待处理（含未迁移与已迁移但路径变化）
 
-- `GET /company/{company_id}/vessels`
-- `GET /metrics`
-- `GET /optimization/{vessel_id}/average`
-- `GET /optimization/{vessel_id}/consumption-total`
-- `GET /optimization/{vessel_id}/values`
-- `GET /reminder/{vessel_id}/engine`
-- `GET /reminder/{vessel_id}/graph`
-- `GET /reminder/{vessel_id}/monthly-power-ranges-sfoc`
-- `GET /reminder/{vessel_id}/values`
-- `POST /calculate/cii`
-- `POST /route-optimization/get-shortest-route`
-- `POST /route-optimization/historical-routes`
-- `POST /route-optimization/plan-all`
-- `POST /route-optimization/ship-route-planner`
+- `GET /metrics`：当前 services 未提供对应聚合指标接口。
+- `GET /optimization/{vessel_id}/average`：能力已迁移到 `GET /optimization/vessel/{vessel_id}/average`，如需平滑升级应补兼容映射。
+- `GET /optimization/{vessel_id}/consumption-total`：能力已迁移到 `GET /optimization/vessel/{vessel_id}/consumption-total`，如需平滑升级应补兼容映射。
+- `GET /optimization/{vessel_id}/values`：能力已迁移到 `GET /optimization/vessel/{vessel_id}/values`，如需平滑升级应补兼容映射。
+- `GET /reminder/{vessel_id}/engine`：当前未迁移。
+- `GET /reminder/{vessel_id}/graph`：当前未迁移。
+- `GET /reminder/{vessel_id}/monthly-power-ranges-sfoc`：当前未迁移。
+- `GET /reminder/{vessel_id}/values`：当前未迁移。
+- `POST /calculate/cii`：当前未迁移。
+- `POST /route-optimization/get-shortest-route`：当前未迁移。
+- `POST /route-optimization/historical-routes`：当前未迁移。
+- `POST /route-optimization/plan-all`：当前未迁移。
+- `POST /route-optimization/ship-route-planner`：当前未迁移。
 
 ## 仅重构后存在（新增）
 
