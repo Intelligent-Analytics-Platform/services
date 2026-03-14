@@ -60,7 +60,7 @@
 
 ### P1：补最影响上线的兼容层
 
-- 为 `/optimization/{vessel_id}/values|average|consumption-total` 增加兼容入口或映射。
+- `/optimization/{vessel_id}/values|average|consumption-total` 兼容入口已于 `2026-03-14` 在 `analytics` 服务落地，后续只需要决定保留周期与下线窗口。
 - 为 `vessel` 视图准备聚合层方案：若前端仍依赖旧字段，应由 BFF/analytics 聚合而不是回填进 vessel 基础服务。
 - 统一 OpenAPI 中 `422/400/404` 的文档响应，避免 SDK 生成抖动。
 
@@ -87,5 +87,5 @@
 
 1. 修正文档中的过期结论，先让团队对当前状态达成一致。
 2. 输出旧接口去向表，并确认哪些路径必须兼容一个发布周期。
-3. 优先补 optimization 旧路径兼容和 upload 异步迁移说明。
+3. 补齐 upload 异步迁移说明，并明确 optimization 旧路径兼容的保留周期。
 4. 再决定 reminder / route optimization / calculate 的最终归宿。

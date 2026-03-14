@@ -11,9 +11,9 @@
 
 ## P1 兼容层
 
-- [ ] 为 `/optimization/{vessel_id}/values` 提供兼容映射到 `/optimization/vessel/{vessel_id}/values`。
-- [ ] 为 `/optimization/{vessel_id}/average` 提供兼容映射到 `/optimization/vessel/{vessel_id}/average`。
-- [ ] 为 `/optimization/{vessel_id}/consumption-total` 提供兼容映射到 `/optimization/vessel/{vessel_id}/consumption-total`。
+- [x] 为 `/optimization/{vessel_id}/values` 提供兼容映射到 `/optimization/vessel/{vessel_id}/values`。
+- [x] 为 `/optimization/{vessel_id}/average` 提供兼容映射到 `/optimization/vessel/{vessel_id}/average`。
+- [x] 为 `/optimization/{vessel_id}/consumption-total` 提供兼容映射到 `/optimization/vessel/{vessel_id}/consumption-total`。
 - [ ] 统一各服务 OpenAPI 中常见错误响应的文档声明，至少覆盖 `400`、`404`、`422`。
 
 ## P2 历史能力决策

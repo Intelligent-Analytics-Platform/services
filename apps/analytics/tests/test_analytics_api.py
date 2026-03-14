@@ -196,6 +196,15 @@ class TestOptimizationEndpoints:
         body = resp.json()
         assert "speed_water" in body["data"]
 
+    def test_legacy_vessel_average_path(self, client):
+        resp = client.get(
+            "/optimization/1/average",
+            params={"start_date": "2023-01-01", "end_date": "2023-01-31"},
+        )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert "speed_water" in body["data"]
+
     def test_optimization_values_no_vessel_service(self, client):
         """Without vessel service, endpoint returns 5xx."""
         resp = client.get(
@@ -204,6 +213,26 @@ class TestOptimizationEndpoints:
         )
         # vessel 999 doesn't exist; vessel service is unavailable → 502/503
         assert resp.status_code in (404, 502, 503)
+
+    def test_legacy_optimization_values_path(self, client):
+        resp = client.get(
+            "/optimization/999/values",
+            params={"start_date": "2023-01-01", "end_date": "2023-01-31"},
+        )
+        assert resp.status_code in (404, 502, 503)
+
+    def test_legacy_consumption_total_path(self, client):
+        resp = client.get(
+            "/optimization/1/consumption-total",
+            params={
+                "fuel_type": "hfo",
+                "start_date": "2023-01-01",
+                "end_date": "2023-01-31",
+            },
+        )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert "total" in body["data"]
 
     def test_trim_data(self, client):
         with (

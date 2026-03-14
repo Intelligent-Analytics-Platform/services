@@ -197,6 +197,39 @@ def get_consumption_statistic_total(
 optimization_router = APIRouter(prefix="/optimization", tags=["优化建议"])
 
 
+def _get_optimization_values_response(
+    vessel_id: int,
+    start_date: date,
+    end_date: date,
+) -> ResponseModel[OptimizationValues]:
+    data = OptimizationService.get_optimization_values(vessel_id, start_date, end_date)
+    return ResponseModel(data=data, message="获取优化数据成功")
+
+
+def _get_vessel_time_average_response(
+    vessel_id: int,
+    start_date: date | None,
+    end_date: date | None,
+) -> ResponseModel[VesselDataPerDayAverage]:
+    data = StatisticService.get_vessel_average(vessel_id, start_date, end_date)
+    return ResponseModel(data=data, message="获取平均数据成功")
+
+
+def _get_consumption_total_response(
+    vessel_id: int,
+    fuel_type: str,
+    start_date: date,
+    end_date: date,
+) -> ResponseModel[ConsumptionStatistic]:
+    data = StatisticService.get_consumption_statistic_total(
+        fuel_type,
+        vessel_id,
+        start_date,
+        end_date,
+    )
+    return ResponseModel(data=data, message="获取能耗数据成功")
+
+
 @optimization_router.get(
     "/vessel/{vessel_id}/values",
     summary="获取优化建议页面走势图数据",
@@ -207,8 +240,21 @@ def get_optimization_values(
     start_date: Annotated[date, Query(description="开始日期", example="2023-01-01")],
     end_date: Annotated[date, Query(description="结束日期", example="2023-06-30")],
 ) -> ResponseModel[OptimizationValues]:
-    data = OptimizationService.get_optimization_values(vessel_id, start_date, end_date)
-    return ResponseModel(data=data, message="获取优化数据成功")
+    return _get_optimization_values_response(vessel_id, start_date, end_date)
+
+
+@optimization_router.get(
+    "/{vessel_id}/values",
+    summary="获取优化建议页面走势图数据（旧路径兼容）",
+    description="兼容旧单体路径，内部与 `/optimization/vessel/{vessel_id}/values` 保持相同行为。",
+    include_in_schema=False,
+)
+def get_optimization_values_legacy(
+    vessel_id: Annotated[int, Path(description="船舶ID", example=1)],
+    start_date: Annotated[date, Query(description="开始日期", example="2023-01-01")],
+    end_date: Annotated[date, Query(description="结束日期", example="2023-06-30")],
+) -> ResponseModel[OptimizationValues]:
+    return _get_optimization_values_response(vessel_id, start_date, end_date)
 
 
 @optimization_router.get(
@@ -221,8 +267,21 @@ def get_vessel_time_average(
     start_date: Annotated[date | None, Query(description="开始日期")] = None,
     end_date: Annotated[date | None, Query(description="结束日期")] = None,
 ) -> ResponseModel[VesselDataPerDayAverage]:
-    data = StatisticService.get_vessel_average(vessel_id, start_date, end_date)
-    return ResponseModel(data=data, message="获取平均数据成功")
+    return _get_vessel_time_average_response(vessel_id, start_date, end_date)
+
+
+@optimization_router.get(
+    "/{vessel_id}/average",
+    summary="获取船舶时段平均数据（旧路径兼容）",
+    description="兼容旧单体路径，内部与 `/optimization/vessel/{vessel_id}/average` 保持相同行为。",
+    include_in_schema=False,
+)
+def get_vessel_time_average_legacy(
+    vessel_id: Annotated[int, Path(description="船舶ID", example=1)],
+    start_date: Annotated[date | None, Query(description="开始日期")] = None,
+    end_date: Annotated[date | None, Query(description="结束日期")] = None,
+) -> ResponseModel[VesselDataPerDayAverage]:
+    return _get_vessel_time_average_response(vessel_id, start_date, end_date)
 
 
 @optimization_router.get(
@@ -235,13 +294,24 @@ def get_consumption_total(
     start_date: Annotated[date, Query(description="开始日期", example="2023-01-01")],
     end_date: Annotated[date, Query(description="结束日期", example="2023-06-30")],
 ) -> ResponseModel[ConsumptionStatistic]:
-    data = StatisticService.get_consumption_statistic_total(
-        fuel_type,
-        vessel_id,
-        start_date,
-        end_date,
-    )
-    return ResponseModel(data=data, message="获取能耗数据成功")
+    return _get_consumption_total_response(vessel_id, fuel_type, start_date, end_date)
+
+
+@optimization_router.get(
+    "/{vessel_id}/consumption-total",
+    summary="获取某时间段总油耗（旧路径兼容）",
+    description=(
+        "兼容旧单体路径，内部与 `/optimization/vessel/{vessel_id}/consumption-total` 保持相同行为。"
+    ),
+    include_in_schema=False,
+)
+def get_consumption_total_legacy(
+    vessel_id: Annotated[int, Path(description="船舶ID", example=1)],
+    fuel_type: Annotated[str, Query(description="燃料类型", example="hfo")],
+    start_date: Annotated[date, Query(description="开始日期", example="2023-01-01")],
+    end_date: Annotated[date, Query(description="结束日期", example="2023-06-30")],
+) -> ResponseModel[ConsumptionStatistic]:
+    return _get_consumption_total_response(vessel_id, fuel_type, start_date, end_date)
 
 
 @optimization_router.get(
